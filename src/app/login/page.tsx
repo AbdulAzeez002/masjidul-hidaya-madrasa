@@ -34,15 +34,11 @@ export default function LoginPage() {
         throw new Error(data.error || 'Login failed');
       }
 
-      if (data.user.role === 'admin') {
-        router.push('/admin');
-      } else {
-        router.push('/member');
-      }
-      router.refresh();
+      // Hard redirect ensures the newly set auth cookie is sent immediately on first load without stale router cache
+      const targetUrl = data.user.role === 'admin' ? '/admin' : '/member';
+      window.location.replace(targetUrl);
     } catch (err: any) {
       setError(err.message);
-    } finally {
       setIsLoading(false);
     }
   };
