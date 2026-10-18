@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DashboardStats, MemberSummary, Payment, SessionUser } from '@/lib/types';
 import PaymentModal from '@/components/PaymentModal';
 import MemberModal from '@/components/MemberModal';
@@ -42,11 +42,37 @@ export default function AdminDashboardClient({
 }: AdminDashboardClientProps) {
   const router = useRouter();
   const [stats, setStats] = useState<DashboardStats>(initialStats);
+  const [membersList, setMembersList] = useState<MemberSummary[]>(members);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showMemberModal, setShowMemberModal] = useState(false);
   const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
   const [showFixedFeeModal, setShowFixedFeeModal] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState<Payment | null>(null);
+
+  useEffect(() => {
+    setStats(initialStats);
+    setMembersList(members);
+  }, [initialStats, members]);
+
+  const refreshDashboardData = async () => {
+    try {
+      const [resStats, resMembers] = await Promise.all([
+        fetch('/api/stats'),
+        fetch('/api/members'),
+      ]);
+      if (resStats.ok) {
+        const dStats = await resStats.json();
+        if (dStats.stats) setStats(dStats.stats);
+      }
+      if (resMembers.ok) {
+        const dMembers = await resMembers.json();
+        if (dMembers.members) setMembersList(dMembers.members);
+      }
+    } catch (e) {
+      console.error('Failed to auto-refresh dashboard data:', e);
+    }
+    router.refresh();
+  };
 
   const currentMonthName = MONTH_NAMES[currentPeriod.month - 1];
   const paidPercent =
@@ -54,20 +80,20 @@ export default function AdminDashboardClient({
       ? Math.round((stats.membersPaidThisMonth / stats.totalMembers) * 100)
       : 0;
 
-  const handlePaymentSuccess = (newPayment: Payment) => {
+  const handlePaymentSuccess = async (newPayment: Payment) => {
     setShowPaymentModal(false);
     setSelectedReceipt(newPayment);
-    router.refresh();
+    await refreshDashboardData();
   };
 
-  const handleMemberSuccess = () => {
+  const handleMemberSuccess = async () => {
     setShowMemberModal(false);
-    router.refresh();
+    await refreshDashboardData();
   };
 
-  const handleAnnouncementSuccess = () => {
+  const handleAnnouncementSuccess = async () => {
     setShowAnnouncementModal(false);
-    router.refresh();
+    await refreshDashboardData();
   };
 
   return (
@@ -415,7 +441,7 @@ export default function AdminDashboardClient({
       {/* Modals */}
       {showPaymentModal && (
         <PaymentModal
-          members={members}
+          members={membersList}
           onClose={() => setShowPaymentModal(false)}
           onSuccess={handlePaymentSuccess}
         />
@@ -447,9 +473,9 @@ export default function AdminDashboardClient({
           currentFee={stats.fixedMonthlyFee || 50}
           upcomingFee={stats.upcomingFee}
           onClose={() => setShowFixedFeeModal(false)}
-          onSuccess={() => {
+          onSuccess={async () => {
             setShowFixedFeeModal(false);
-            router.refresh();
+            await refreshDashboardData();
           }}
         />
       )}

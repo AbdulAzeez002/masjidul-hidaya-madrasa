@@ -16,10 +16,14 @@ export default async function MemberPage() {
     redirect('/admin');
   }
 
-  const memberSummary = await getMemberSummaryById(session.id);
-  const payments = await getPaymentsByMember(session.id);
-  const announcements = await getAllAnnouncements();
-  const currentPeriod = getCurrentYearMonth();
+  const [[memberSummary, payments, announcements], currentPeriod] = [
+    await Promise.all([
+      getMemberSummaryById(session.id),
+      getPaymentsByMember(session.id),
+      getAllAnnouncements(),
+    ]),
+    getCurrentYearMonth(),
+  ];
 
   if (!memberSummary) {
     return (

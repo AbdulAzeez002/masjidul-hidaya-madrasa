@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
-import { getDashboardStats, getMemberSummaries } from '@/lib/db';
+import { getAdminDashboardData } from '@/lib/db';
 import AdminDashboardClient from './AdminDashboardClient';
 import { getCurrentYearMonth } from '@/lib/utils';
 
@@ -15,9 +15,10 @@ export default async function AdminDashboardPage() {
     redirect('/member');
   }
 
-  const stats = await getDashboardStats();
-  const members = await getMemberSummaries();
-  const currentPeriod = getCurrentYearMonth();
+  const [{ stats, members }, currentPeriod] = [
+    await getAdminDashboardData(),
+    getCurrentYearMonth(),
+  ];
 
   return (
     <AdminDashboardClient

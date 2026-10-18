@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MemberSummary, DashboardStats, Payment } from '@/lib/types';
 import { formatCurrency, formatDate, MONTH_NAMES } from '@/lib/utils';
 import PaymentModal from '@/components/PaymentModal';
@@ -25,12 +25,39 @@ interface ReportsClientProps {
 export default function ReportsClient({ members, stats, currentPeriod }: ReportsClientProps) {
   const router = useRouter();
   const currentMonthName = MONTH_NAMES[currentPeriod.month - 1];
+  const [membersList, setMembersList] = useState<MemberSummary[]>(members);
+  const [currentStats, setCurrentStats] = useState<DashboardStats>(stats);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [payMemberId, setPayMemberId] = useState<string | undefined>(undefined);
   const [selectedReceipt, setSelectedReceipt] = useState<Payment | null>(null);
 
+  useEffect(() => {
+    setMembersList(members);
+    setCurrentStats(stats);
+  }, [members, stats]);
+
+  const reloadReports = async () => {
+    try {
+      const [resMembers, resStats] = await Promise.all([
+        fetch('/api/members'),
+        fetch('/api/stats'),
+      ]);
+      if (resMembers.ok) {
+        const dMembers = await resMembers.json();
+        if (dMembers.members) setMembersList(dMembers.members);
+      }
+      if (resStats.ok) {
+        const dStats = await resStats.json();
+        if (dStats.stats) setCurrentStats(dStats.stats);
+      }
+    } catch (e) {
+      console.error('Failed to reload reports:', e);
+    }
+    router.refresh();
+  };
+
   // Filter members who have pending dues
-  const defaulters = members.filter((m) => m.pendingBalance > 0);
+  const defaulters = membersList.filter((m) => m.pendingBalance > 0);
   const totalPendingAmount = defaulters.reduce((sum, m) => sum + m.pendingBalance, 0);
 
   const handleSendReminder = (m: MemberSummary) => {
@@ -300,16 +327,16 @@ export default function ReportsClient({ members, stats, currentPeriod }: Reports
       {/* Modals */}
       {showPaymentModal && (
         <PaymentModal
-          members={members}
+          members={membersList}
           preSelectedMemberId={payMemberId}
           onClose={() => {
             setShowPaymentModal(false);
             setPayMemberId(undefined);
           }}
-          onSuccess={(p) => {
+          onSuccess={async (p) => {
             setShowPaymentModal(false);
             setSelectedReceipt(p);
-            router.refresh();
+            await reloadReports();
           }}
         />
       )}

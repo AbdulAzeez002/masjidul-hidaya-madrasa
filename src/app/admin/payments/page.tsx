@@ -11,9 +11,10 @@ export default async function AdminPaymentsPage() {
     redirect('/login');
   }
 
-  const payments = await getAllPayments();
-  const members = await getMemberSummaries();
-  const currentPeriod = getCurrentYearMonth();
+  const [[payments, members], currentPeriod] = [
+    await Promise.all([getAllPayments(), getMemberSummaries()]),
+    getCurrentYearMonth(),
+  ];
 
   return (
     <PaymentsClient

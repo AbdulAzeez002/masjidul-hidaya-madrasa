@@ -100,38 +100,11 @@ function saveLocalDatabase(data: DatabaseSchema) {
   dbCache = data;
 }
 
-// MongoDB helper: get DB and ensure seed if empty
-let isMongoSeeded = false;
+// MongoDB helper: get DB
 async function getMongoDb() {
   if (!clientPromise) return null;
   const client = await clientPromise;
-  const db = client.db(DB_NAME);
-
-  if (!isMongoSeeded) {
-    const membersCount = await db.collection('members').countDocuments();
-    if (membersCount === 0) {
-      console.log('🌱 Migrating current madrasa data and fee settings to MongoDB Atlas...');
-      const localData = ensureLocalDataFile();
-      await db.collection('members').insertMany(localData.members as any);
-      await db.collection('payments').insertMany(localData.payments as any);
-      await db.collection('announcements').insertMany(localData.announcements as any);
-      await db.collection('meta').updateOne(
-        { key: 'settings' },
-        {
-          $set: {
-            key: 'settings',
-            paymentSeq: localData.paymentSeq,
-            madrasaName: localData.madrasaName,
-            branchName: localData.branchName,
-            feeSchedule: localData.feeSchedule || [{ amount: 50, effectiveFrom: '2026-01', createdAt: new Date().toISOString() }],
-          },
-        },
-        { upsert: true }
-      );
-    }
-    isMongoSeeded = true;
-  }
-  return db;
+  return client.db(DB_NAME);
 }
 
 // ===================== FEE SETTINGS OPERATIONS =====================
@@ -525,10 +498,14 @@ export async function deleteAnnouncement(id: string): Promise<boolean> {
 
 // ===================== CALCULATIONS & SUMMARIES =====================
 
-export async function getMemberSummaries(): Promise<MemberSummary[]> {
-  const members = await getAllMembers();
-  const payments = await getAllPayments();
-  const feeSettings = await getFeeSettings();
+export async function getMemberSummaries(
+  preloaded?: { members?: Member[]; payments?: Payment[]; feeSettings?: FeeSettings }
+): Promise<MemberSummary[]> {
+  const [members, payments, feeSettings] = await Promise.all([
+    preloaded?.members ? Promise.resolve(preloaded.members) : getAllMembers(),
+    preloaded?.payments ? Promise.resolve(preloaded.payments) : getAllPayments(),
+    preloaded?.feeSettings ? Promise.resolve(preloaded.feeSettings) : getFeeSettings(),
+  ]);
   const { year: currentYear, month: currentMonth, key: currentKey } = getCurrentYearMonth();
   const nextMonthPeriod = getNextYearMonth();
 
@@ -614,11 +591,15 @@ export async function getMemberSummaryById(memberId: string): Promise<MemberSumm
   return summaries.find((s) => s.id === memberId) || null;
 }
 
-export async function getDashboardStats(): Promise<DashboardStats> {
-  const payments = await getAllPayments();
-  const announcements = await getAllAnnouncements();
-  const summaries = await getMemberSummaries();
-  const feeSettings = await getFeeSettings();
+export async function getAdminDashboardData(): Promise<{ stats: DashboardStats; members: MemberSummary[] }> {
+  const [members, payments, announcements, feeSettings] = await Promise.all([
+    getAllMembers(),
+    getAllPayments(),
+    getAllAnnouncements(),
+    getFeeSettings(),
+  ]);
+
+  const summaries = await getMemberSummaries({ members, payments, feeSettings });
   const { year: currentYear, month: currentMonth } = getCurrentYearMonth();
 
   const activeMembers = summaries.filter((m) => m.status === 'active');
@@ -638,7 +619,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const recentPayments = payments.slice(0, 8);
   const recentAnnouncements = announcements.slice(0, 5);
 
-  return {
+  const stats: DashboardStats = {
     totalMembers,
     activeMembers: totalMembers,
     totalCollectedThisMonth,
@@ -652,4 +633,11 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     recentPayments,
     recentAnnouncements,
   };
+
+  return { stats, members: summaries };
+}
+
+export async function getDashboardStats(): Promise<DashboardStats> {
+  const data = await getAdminDashboardData();
+  return data.stats;
 }

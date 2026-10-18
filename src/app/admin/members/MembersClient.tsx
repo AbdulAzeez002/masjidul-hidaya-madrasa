@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MemberSummary, Payment } from '@/lib/types';
 import { formatCurrency, formatDate, MONTH_NAMES } from '@/lib/utils';
 import StatusBadge from '@/components/StatusBadge';
@@ -44,6 +44,23 @@ export default function MembersClient({ initialMembers, currentPeriod }: Members
   const [payTargetMemberId, setPayTargetMemberId] = useState<string | undefined>(undefined);
   const [selectedReceipt, setSelectedReceipt] = useState<Payment | null>(null);
   const [revealedPasswords, setRevealedPasswords] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    setMembers(initialMembers);
+  }, [initialMembers]);
+
+  const reloadMembers = async () => {
+    try {
+      const res = await fetch('/api/members');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.members) setMembers(data.members);
+      }
+    } catch (e) {
+      console.error('Failed to reload members:', e);
+    }
+    router.refresh();
+  };
 
   const currentMonthName = MONTH_NAMES[currentPeriod.month - 1];
 
@@ -440,10 +457,10 @@ export default function MembersClient({ initialMembers, currentPeriod }: Members
             setShowMemberModal(false);
             setMemberToEdit(null);
           }}
-          onSuccess={() => {
+          onSuccess={async () => {
             setShowMemberModal(false);
             setMemberToEdit(null);
-            router.refresh();
+            await reloadMembers();
           }}
         />
       )}
@@ -456,10 +473,10 @@ export default function MembersClient({ initialMembers, currentPeriod }: Members
             setShowPaymentModal(false);
             setPayTargetMemberId(undefined);
           }}
-          onSuccess={(p) => {
+          onSuccess={async (p) => {
             setShowPaymentModal(false);
             setSelectedReceipt(p);
-            router.refresh();
+            await reloadMembers();
           }}
         />
       )}
@@ -480,9 +497,9 @@ export default function MembersClient({ initialMembers, currentPeriod }: Members
               : undefined
           }
           onClose={() => setShowFixedFeeModal(false)}
-          onSuccess={() => {
+          onSuccess={async () => {
             setShowFixedFeeModal(false);
-            router.refresh();
+            await reloadMembers();
           }}
         />
       )}

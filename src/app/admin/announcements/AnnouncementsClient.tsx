@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Announcement } from '@/lib/types';
 import { formatDate } from '@/lib/utils';
 import AnnouncementModal from '@/components/AnnouncementModal';
@@ -27,6 +27,23 @@ export default function AnnouncementsClient({ initialAnnouncements }: Announceme
   const [showModal, setShowModal] = useState(false);
   const [announcementToEdit, setAnnouncementToEdit] = useState<Announcement | null>(null);
 
+  useEffect(() => {
+    setAnnouncements(initialAnnouncements);
+  }, [initialAnnouncements]);
+
+  const reloadAnnouncements = async () => {
+    try {
+      const res = await fetch('/api/announcements');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.announcements) setAnnouncements(data.announcements);
+      }
+    } catch (e) {
+      console.error('Failed to reload announcements:', e);
+    }
+    router.refresh();
+  };
+
   const handleDelete = async (id: string, title: string) => {
     if (!window.confirm(`Are you sure you want to delete notice "${title}"?`)) {
       return;
@@ -36,7 +53,7 @@ export default function AnnouncementsClient({ initialAnnouncements }: Announceme
       const res = await fetch(`/api/announcements/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setAnnouncements((prev) => prev.filter((a) => a.id !== id));
-        router.refresh();
+        await reloadAnnouncements();
       } else {
         alert('Failed to delete announcement');
       }
@@ -161,10 +178,10 @@ export default function AnnouncementsClient({ initialAnnouncements }: Announceme
             setShowModal(false);
             setAnnouncementToEdit(null);
           }}
-          onSuccess={() => {
+          onSuccess={async () => {
             setShowModal(false);
             setAnnouncementToEdit(null);
-            router.refresh();
+            await reloadAnnouncements();
           }}
         />
       )}

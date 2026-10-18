@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Payment, MemberSummary } from '@/lib/types';
 import { formatCurrency, formatDate, MONTH_NAMES_SHORT, MONTH_NAMES } from '@/lib/utils';
 import PaymentModal from '@/components/PaymentModal';
@@ -38,6 +38,7 @@ export default function PaymentsClient({
 }: PaymentsClientProps) {
   const router = useRouter();
   const [payments, setPayments] = useState<Payment[]>(initialPayments);
+  const [membersList, setMembersList] = useState<MemberSummary[]>(members);
   const [activeTab, setActiveTab] = useState<'matrix' | 'history'>('matrix');
   const [selectedYear, setSelectedYear] = useState<number>(currentPeriod.year);
   const [searchMember, setSearchMember] = useState('');
@@ -46,6 +47,30 @@ export default function PaymentsClient({
   const [preSelectedMemberId, setPreSelectedMemberId] = useState<string | undefined>(undefined);
   const [selectedReceipt, setSelectedReceipt] = useState<Payment | null>(null);
 
+  useEffect(() => {
+    setPayments(initialPayments);
+    setMembersList(members);
+  }, [initialPayments, members]);
+
+  const reloadPaymentsAndMembers = async () => {
+    try {
+      const [resPay, resMem] = await Promise.all([
+        fetch('/api/payments'),
+        fetch('/api/members'),
+      ]);
+      if (resPay.ok) {
+        const dPay = await resPay.json();
+        if (dPay.payments) setPayments(dPay.payments);
+      }
+      if (resMem.ok) {
+        const dMem = await resMem.json();
+        if (dMem.members) setMembersList(dMem.members);
+      }
+    } catch (e) {
+      console.error('Failed to reload payments data:', e);
+    }
+    router.refresh();
+  };
 
   // Filter payments for the selected year
   const yearPayments = payments.filter((p) => p.forYear === selectedYear);
@@ -60,7 +85,7 @@ export default function PaymentsClient({
       (paymentMatrix[p.memberId][p.forMonth] || 0) + p.amount;
   });
 
-  const filteredMembers = members.filter((m) =>
+  const filteredMembers = membersList.filter((m) =>
     m.name.toLowerCase().includes(searchMember.toLowerCase()) ||
     m.memberCode.toLowerCase().includes(searchMember.toLowerCase())
   );
@@ -74,7 +99,7 @@ export default function PaymentsClient({
       const res = await fetch(`/api/payments/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setPayments((prev) => prev.filter((p) => p.id !== id));
-        router.refresh();
+        await reloadPaymentsAndMembers();
       } else {
         alert('Failed to delete payment');
       }
@@ -505,14 +530,13 @@ export default function PaymentsClient({
       {/* Modals */}
       {showPaymentModal && (
         <PaymentModal
-          members={members}
+          members={membersList}
           preSelectedMemberId={preSelectedMemberId}
           onClose={() => setShowPaymentModal(false)}
-          onSuccess={(newP) => {
+          onSuccess={async (newP) => {
             setShowPaymentModal(false);
-            setPayments((prev) => [newP, ...prev]);
             setSelectedReceipt(newP);
-            router.refresh();
+            await reloadPaymentsAndMembers();
           }}
         />
       )}
@@ -526,17 +550,17 @@ export default function PaymentsClient({
 
       {showFixedFeeModal && (
         <FixedFeeModal
-          currentFee={members[0]?.currentMonthFee || 50}
+          currentFee={membersList[0]?.currentMonthFee || 50}
           upcomingFee={
-            members[0]?.nextMonthFee && members[0]?.nextMonthFee !== (members[0]?.currentMonthFee || 50)
-              ? { amount: members[0].nextMonthFee, effectiveFrom: `${currentPeriod.year}-${String(currentPeriod.month + 1).padStart(2, '0')}` }
+            membersList[0]?.nextMonthFee && membersList[0]?.nextMonthFee !== (membersList[0]?.currentMonthFee || 50)
+              ? { amount: membersList[0].nextMonthFee, effectiveFrom: `${currentPeriod.year}-${String(currentPeriod.month + 1).padStart(2, '0')}` }
               : undefined
           }
           onClose={() => setShowFixedFeeModal(false)}
 
-          onSuccess={() => {
+          onSuccess={async () => {
             setShowFixedFeeModal(false);
-            router.refresh();
+            await reloadPaymentsAndMembers();
           }}
         />
       )}
