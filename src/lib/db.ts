@@ -31,7 +31,6 @@ interface DatabaseSchema {
 // Generate realistic seed data
 function getInitialSeedData(): DatabaseSchema {
   const adminHash = bcrypt.hashSync('masjidulhidaya@admin9747', 10);
-  const userHash = bcrypt.hashSync('user123', 10);
 
   const initialMembers: Member[] = [
     {
@@ -51,41 +50,9 @@ function getInitialSeedData(): DatabaseSchema {
       createdAt: '2026-01-01T00:00:00.000Z',
       updatedAt: '2026-01-01T00:00:00.000Z',
     },
-    {
-      id: 'mem_user',
-      memberCode: 'NI-001',
-      name: 'Test Member',
-      phone: '9745781373',
-      address: 'Pullancheri, Keralam 676122',
-      monthlyFee: 50,
-      joiningDate: '2026-01',
-      username: 'user',
-      passwordHash: userHash,
-      plainPasswordHint: 'user123',
-      role: 'member',
-      status: 'active',
-      notes: 'Test member account',
-      createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-01T00:00:00.000Z',
-    },
   ];
 
-  const initialPayments: Payment[] = [
-    {
-      id: 'pay_1',
-      receiptNumber: 'RCP-2026-0001',
-      memberId: 'mem_user',
-      memberName: 'Test Member',
-      amount: 50,
-      paymentDate: '2026-01-10',
-      forMonth: 1,
-      forYear: 2026,
-      paymentMode: 'Cash',
-      notes: 'Initial test subscription payment',
-      recordedBy: 'Admin',
-      createdAt: '2026-01-10T10:00:00.000Z',
-    },
-  ];
+  const initialPayments: Payment[] = [];
 
   const initialAnnouncements: Announcement[] = [
     {
