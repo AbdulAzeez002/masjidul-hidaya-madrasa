@@ -143,7 +143,7 @@ export default function FixedFeeModal({
               <input
                 type="number"
                 min="1"
-                step="10"
+                step="1"
                 value={newAmount}
                 onChange={(e) => setNewAmount(e.target.value)}
                 placeholder="Enter amount"
