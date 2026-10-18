@@ -8,6 +8,17 @@ export const metadata: Metadata = {
   title: 'നസ്‌റത്തുൽ ഇസ്‌ലാം മദ്റസ - കിഴക്കേത്തല ശാഖ | Fee Tracker',
   description:
     'Monthly subscription and dues tracking portal for Nasruthul Islam Madrasa, Kiyakethala Branch.',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32' },
+      { url: '/icon.png', sizes: '512x512', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: [
+      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
+  manifest: '/manifest.json',
 };
 
 export const viewport: Viewport = {

@@ -1,0 +1,21 @@
+{
+  "name": "നസ്‌റത്തുൽ ഇസ്‌ലാം മദ്റസ - കിഴക്കേത്തല ശാഖ",
+  "short_name": "കിഴക്കേത്തല മദ്റസ",
+  "description": "Monthly subscription and dues tracking portal for Nasruthul Islam Madrasa, Kiyakethala Branch.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#064e3b",
+  "theme_color": "#064e3b",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
