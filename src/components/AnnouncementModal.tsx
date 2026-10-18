@@ -65,14 +65,14 @@ export default function AnnouncementModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-      <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-gray-200 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-xs">
+      <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-gray-200 overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header */}
-        <div className="bg-emerald-800 text-white px-6 py-4 flex items-center justify-between">
+        <div className="bg-emerald-800 text-white px-4 sm:px-6 py-4 flex items-center justify-between shrink-0">
           <div className="flex items-center space-x-2">
             <Megaphone className="w-6 h-6 text-emerald-300" />
             <div>
-              <h2 className="text-xl font-bold">
+              <h2 className="text-lg sm:text-xl font-bold">
                 {isEditing ? 'അറിയിപ്പ് മാറ്റം വരുത്തുക' : 'പുതിയ അറിയിപ്പ് നൽകുക'}
               </h2>
               <p className="text-xs text-emerald-200">Post Madrasa Announcement for Members</p>
@@ -87,7 +87,7 @@ export default function AnnouncementModal({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 overflow-y-auto">
           {error && (
             <div className="p-3 bg-rose-50 border border-rose-300 rounded-xl text-rose-800 text-sm font-semibold">
               {error}
@@ -102,7 +102,7 @@ export default function AnnouncementModal({
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Monthly Committee Meeting, Fee Collection Notice"
+              placeholder="Notice title"
               className="w-full px-3.5 py-2.5 rounded-xl border-2 border-gray-300 focus:border-emerald-600 focus:outline-hidden font-bold text-gray-900"
               required
             />
@@ -116,7 +116,7 @@ export default function AnnouncementModal({
               rows={4}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Write the message clearly for elderly members to read..."
+              placeholder="Write announcement details here..."
               className="w-full px-3.5 py-2.5 rounded-xl border-2 border-gray-300 focus:border-emerald-600 focus:outline-hidden text-sm leading-relaxed"
               required
             />
@@ -155,20 +155,20 @@ export default function AnnouncementModal({
           </div>
 
           {/* Actions */}
-          <div className="pt-3 border-t border-gray-200 flex items-center justify-end space-x-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2.5 rounded-xl text-gray-700 font-semibold hover:bg-gray-100 transition"
-            >
-              Cancel
-            </button>
+          <div className="pt-3 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-end gap-2 sm:gap-3">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition shadow-md disabled:opacity-50 text-base"
+              className="w-full sm:w-auto order-1 sm:order-2 px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition shadow-md disabled:opacity-50 text-base min-h-[44px]"
             >
               {isSubmitting ? 'പോസ്റ്റ് ചെയ്യുന്നു...' : 'പ്രസിദ്ധീകരിക്കുക (Publish Notice)'}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full sm:w-auto order-2 sm:order-1 px-4 py-2.5 rounded-xl text-gray-700 font-semibold hover:bg-gray-100 transition min-h-[44px]"
+            >
+              Cancel
             </button>
           </div>
         </form>

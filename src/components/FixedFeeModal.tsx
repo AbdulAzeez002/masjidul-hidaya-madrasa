@@ -67,16 +67,16 @@ export default function FixedFeeModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-      <div className="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-gray-200 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-xs">
+      <div className="bg-white rounded-2xl sm:rounded-3xl max-w-lg w-full shadow-2xl border border-gray-200 overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header */}
-        <div className="bg-emerald-800 text-white px-6 py-5 flex items-center justify-between">
+        <div className="bg-emerald-800 text-white px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between shrink-0">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-700/80 flex items-center justify-center border border-emerald-500/40">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-700/80 flex items-center justify-center border border-emerald-500/40 shrink-0">
               <IndianRupee className="w-6 h-6 text-emerald-200" />
             </div>
             <div>
-              <h2 className="text-xl font-bold">നിശ്ചിത വരിസംഖ്യ മാറ്റുക</h2>
+              <h2 className="text-lg sm:text-xl font-bold">നിശ്ചിത വരിസംഖ്യ മാറ്റുക</h2>
               <p className="text-xs text-emerald-200">Change Madrasa Fixed Monthly Fee</p>
             </div>
           </div>
@@ -89,7 +89,7 @@ export default function FixedFeeModal({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto">
           {error && (
             <div className="p-3.5 bg-rose-50 border border-rose-300 rounded-2xl text-rose-800 text-sm font-semibold flex items-center space-x-2">
               <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
@@ -146,9 +146,8 @@ export default function FixedFeeModal({
                 step="10"
                 value={newAmount}
                 onChange={(e) => setNewAmount(e.target.value)}
-                placeholder="50"
+                placeholder="Enter amount"
                 className="w-full pl-9 pr-4 py-3 rounded-2xl border-2 border-emerald-300 focus:border-emerald-600 focus:outline-hidden text-2xl font-black text-emerald-950 bg-emerald-50/30"
-
                 required
                 autoFocus
               />
@@ -178,22 +177,22 @@ export default function FixedFeeModal({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end space-x-3 pt-3 border-t border-gray-100">
+          <div className="flex flex-col sm:flex-row items-center justify-end gap-2 sm:gap-3 pt-3 border-t border-gray-100">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full sm:w-auto order-1 sm:order-2 px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition shadow-md flex items-center justify-center space-x-2 text-sm disabled:opacity-50 min-h-[44px]"
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              <span>{isSubmitting ? 'സേവ് ചെയ്യുന്നു...' : 'അടുത്ത മാസം മുതൽ നടപ്പിലാക്കുക'}</span>
+            </button>
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-5 py-2.5 rounded-xl border border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition text-sm"
+              className="w-full sm:w-auto order-2 sm:order-1 px-5 py-2.5 rounded-xl border border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition text-sm min-h-[44px]"
             >
               റദ്ദാക്കുക (Cancel)
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition shadow-md flex items-center space-x-2 text-sm disabled:opacity-50"
-            >
-              <CheckCircle2 className="w-4 h-4" />
-              <span>{isSubmitting ? 'സേവ് ചെയ്യുന്നു...' : 'അടുത്ത മാസം മുതൽ നടപ്പിലാക്കുക'}</span>
             </button>
           </div>
         </form>

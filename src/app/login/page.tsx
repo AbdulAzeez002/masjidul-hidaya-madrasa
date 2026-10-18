@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Building2, KeyRound, User, Eye, EyeOff, ShieldAlert, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Building2, KeyRound, User, Eye, EyeOff, ShieldAlert, CheckCircle2 } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -47,51 +47,45 @@ export default function LoginPage() {
     }
   };
 
-  const fillCredentials = (u: string, p: string) => {
-    setUsername(u);
-    setPassword(p);
-    setError(null);
-  };
-
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-6">
+    <div className="min-h-[75vh] flex items-center justify-center px-3 sm:px-6 lg:px-8 py-6 sm:py-12">
+      <div className="max-w-md w-full space-y-5 sm:space-y-6">
         {/* Madrasa Title Header */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex p-3.5 bg-gradient-to-tr from-emerald-800 to-emerald-600 rounded-3xl text-white shadow-lg mb-2">
-            <Building2 className="w-12 h-12" />
+        <div className="text-center space-y-1.5 sm:space-y-2">
+          <div className="inline-flex p-3 sm:p-3.5 bg-gradient-to-tr from-emerald-800 to-emerald-600 rounded-2xl sm:rounded-3xl text-white shadow-md sm:shadow-lg mb-1">
+            <Building2 className="w-9 h-9 sm:w-12 sm:h-12" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-emerald-950 tracking-tight">
+          <h1 className="text-xl sm:text-3xl font-black text-emerald-950 tracking-tight leading-tight">
             നസ്‌റത്തുൽ ഇസ്‌ലാം മദ്റസ
           </h1>
-          <p className="text-base font-bold text-emerald-700">
+          <p className="text-sm sm:text-base font-bold text-emerald-700">
             കിഴക്കേത്തല ശാഖ (Kiyakethala Branch)
           </p>
-          <div className="inline-block px-3 py-1 bg-emerald-100 text-emerald-900 rounded-full text-xs font-bold uppercase tracking-wider">
+          <div className="inline-block px-3 py-1 bg-emerald-100 text-emerald-900 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider">
             മാസ വരിസംഖ്യ പോർട്ടൽ / Monthly Fee Tracker
           </div>
         </div>
 
         {/* Login Box */}
-        <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-xl border-2 border-emerald-100 space-y-6">
-          <div className="border-b border-gray-100 pb-3">
-            <h2 className="text-xl font-bold text-gray-900">ലോഗിൻ / Sign In</h2>
+        <div className="bg-white p-4 sm:p-8 rounded-2xl sm:rounded-3xl shadow-md sm:shadow-xl border border-emerald-100 space-y-4 sm:space-y-6">
+          <div className="border-b border-gray-100 pb-2.5">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900">ലോഗിൻ / Sign In</h2>
             <p className="text-xs text-gray-500 mt-0.5">
               അംഗങ്ങൾക്കും അഡ്മിനും ഇവിടെ ലോഗിൻ ചെയ്യാം
             </p>
           </div>
 
           {error && (
-            <div className="p-4 bg-rose-50 border-2 border-rose-300 rounded-2xl flex items-start space-x-3 text-rose-800">
+            <div className="p-3.5 bg-rose-50 border border-rose-300 rounded-xl sm:rounded-2xl flex items-start space-x-2.5 text-rose-800">
               <ShieldAlert className="w-5 h-5 flex-shrink-0 text-rose-600 mt-0.5" />
-              <div className="text-sm font-semibold leading-relaxed">{error}</div>
+              <div className="text-xs sm:text-sm font-semibold leading-relaxed">{error}</div>
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-5">
+          <form onSubmit={handleLogin} className="space-y-4 sm:space-y-5">
             {/* Username Input */}
             <div>
-              <label className="block text-sm font-bold text-gray-800 mb-1 flex items-center">
+              <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-1 flex items-center">
                 <User className="w-4 h-4 mr-1 text-emerald-700" />
                 യൂസർ നെയിം (Username)
               </label>
@@ -100,15 +94,15 @@ export default function LoginPage() {
                 autoComplete="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="e.g. kunju101 or admin"
-                className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-emerald-600 focus:outline-hidden text-base font-semibold text-gray-900"
+                placeholder="Enter your username"
+                className="w-full px-3.5 py-3 rounded-xl border-2 border-gray-300 focus:border-emerald-600 focus:outline-hidden text-base font-semibold text-gray-900 min-h-[48px]"
                 required
               />
             </div>
 
             {/* Password Input */}
             <div>
-              <label className="block text-sm font-bold text-gray-800 mb-1 flex items-center justify-between">
+              <label className="block text-xs sm:text-sm font-bold text-gray-800 mb-1 flex items-center justify-between">
                 <span className="flex items-center">
                   <KeyRound className="w-4 h-4 mr-1 text-emerald-700" />
                   പാസ്‌വേഡ് (Password)
@@ -116,7 +110,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-xs text-emerald-700 hover:text-emerald-900 font-semibold flex items-center"
+                  className="text-xs text-emerald-700 hover:text-emerald-900 font-semibold flex items-center p-1"
                 >
                   {showPassword ? (
                     <>
@@ -136,7 +130,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full px-4 py-3 rounded-xl border-2 border-gray-300 focus:border-emerald-600 focus:outline-hidden text-base font-semibold text-gray-900"
+                  className="w-full px-3.5 py-3 rounded-xl border-2 border-gray-300 focus:border-emerald-600 focus:outline-hidden text-base font-semibold text-gray-900 min-h-[48px]"
                   required
                 />
               </div>
@@ -146,7 +140,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3.5 px-4 bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white font-black text-lg rounded-2xl shadow-lg transition duration-150 transform hover:-translate-y-0.5 disabled:opacity-50 flex items-center justify-center space-x-2"
+              className="w-full py-3.5 px-4 bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white font-black text-base sm:text-lg rounded-xl sm:rounded-2xl shadow-md transition duration-150 transform hover:-translate-y-0.5 disabled:opacity-50 flex items-center justify-center space-x-2 min-h-[50px]"
             >
               {isLoading ? (
                 <span>പരിശോധിക്കുന്നു...</span>
@@ -159,42 +153,27 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Policy Notice: No Self Registration */}
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 text-xs text-amber-900 leading-relaxed">
-            <span className="font-bold block mb-0.5">ശ്രദ്ധിക്കുക (Notice):</span>
-            വ്യക്തികൾക്ക് സ്വന്തമായി പുതിയ അക്കൗണ്ട് ഉണ്ടാക്കാൻ സാധ്യമല്ല. അഡ്മിൻ നൽകുന്ന വിവരങ്ങൾ ഉപയോഗിച്ചാണ് ലോഗിൻ ചെയ്യേണ്ടത്. ലോഗിൻ സംശയങ്ങൾക്ക് മദ്റസ ഓഫീസുമായി ബന്ധപ്പെടുക.
-          </div>
-        </div>
-
-        {/* Demo Fast-Testing Accounts Card */}
-        <div className="bg-white/90 border border-emerald-200 rounded-2xl p-4 shadow-sm space-y-3">
-          <div className="flex items-center space-x-1.5 text-xs font-bold text-emerald-900 uppercase tracking-wide">
-            <Sparkles className="w-4 h-4 text-emerald-600" />
-            <span>ടെസ്റ്റ് അക്കൗണ്ടുകൾ (Quick Demo Logins):</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            {/* Admin */}
-            <button
-              type="button"
-              onClick={() => fillCredentials('admin', 'admin123')}
-              className="p-3 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-left transition"
-            >
-              <div className="font-bold text-emerald-900 text-sm">Administrator</div>
-              <div className="text-emerald-700 font-mono text-xs">admin / admin123</div>
-              <div className="text-[11px] text-gray-500 mt-0.5">Admin Management Portal</div>
-            </button>
-
-            {/* Test Member */}
-            <button
-              type="button"
-              onClick={() => fillCredentials('user', 'user123')}
-              className="p-3 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 text-left transition"
-            >
-              <div className="font-bold text-gray-900 text-sm">Test Member (NI-001)</div>
-              <div className="text-gray-700 font-mono text-xs">user / user123</div>
-              <div className="text-[11px] text-emerald-700 mt-0.5">₹50/mo • Member Portal</div>
-            </button>
+          {/* Help Contact Notice */}
+          <div className="bg-slate-50 border border-slate-200 rounded-xl sm:rounded-2xl p-3 text-xs text-gray-600 leading-relaxed text-center">
+            <p className="mb-2">
+              ലോഗിൻ വിവരങ്ങൾ ലഭിക്കാനോ സഹായത്തിനോ മദ്റസ ഓഫീസുമായി ബന്ധപ്പെടുക:
+            </p>
+            <div className="flex items-center justify-center space-x-2">
+              <a
+                href="tel:9745781373"
+                className="inline-flex items-center space-x-1 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold text-xs min-h-[36px]"
+              >
+                <span>ഫോൺ: 9745781373</span>
+              </a>
+              <a
+                href="https://api.whatsapp.com/send?phone=919745781373&text=Assalamu%20Alaikum%2C%20I%20need%20help%20with%20my%20Madrasa%20login"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center space-x-1 px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 rounded-lg font-bold text-xs min-h-[36px]"
+              >
+                <span>WhatsApp സഹായം</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>

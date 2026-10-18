@@ -131,7 +131,7 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
               type="text"
               value={name}
               onChange={(e) => handleNameChange(e.target.value)}
-              placeholder="e.g. Kunjumuhammad Haji, Aboobacker Musliyar"
+              placeholder="Enter full name"
               className="w-full px-3.5 py-2.5 rounded-xl border-2 border-gray-300 focus:border-emerald-600 focus:outline-hidden font-medium text-gray-900"
               required
             />
@@ -147,7 +147,7 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
                 type="text"
                 value={memberCode}
                 onChange={(e) => setMemberCode(e.target.value)}
-                placeholder="e.g. NI-108"
+                placeholder="e.g. NI-002"
                 className="w-full px-3.5 py-2.5 rounded-xl border-2 border-gray-300 focus:border-emerald-600 focus:outline-hidden font-mono text-sm"
               />
             </div>
@@ -162,7 +162,7 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="9847XXXXXX"
+                placeholder="Phone number"
                 className="w-full px-3.5 py-2.5 rounded-xl border-2 border-gray-300 focus:border-emerald-600 focus:outline-hidden text-sm"
               />
             </div>
@@ -178,7 +178,7 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="e.g. Pookkottur House, Kiyakethala Road"
+              placeholder="House name / address"
               className="w-full px-3.5 py-2.5 rounded-xl border-2 border-gray-300 focus:border-emerald-600 focus:outline-hidden text-sm"
             />
           </div>
@@ -193,7 +193,6 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
               <div className="w-full px-3.5 py-2.5 rounded-xl border-2 border-emerald-200 bg-emerald-50/60 font-black text-emerald-900 flex items-center justify-between">
                 <span>{formatCurrency(Number(monthlyFee) || 50)} / മാസം</span>
                 <span className="text-[11px] font-bold text-emerald-800 bg-emerald-200/80 px-2 py-0.5 rounded-md">
-
                   നിശ്ചിത തുക (Fixed)
                 </span>
               </div>
@@ -201,7 +200,6 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
                 എല്ലാ അംഗങ്ങൾക്കും ഒരേ നിശ്ചിത തുകയായിരിക്കും.
               </p>
             </div>
-
 
             <div>
               <label className="block text-sm font-bold text-gray-800 mb-1">
@@ -235,7 +233,7 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="e.g. kunju101"
+                  placeholder="Username"
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-emerald-600 focus:outline-hidden font-mono text-sm bg-white"
                   required
                 />
@@ -249,7 +247,7 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
                   type="text"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder={isEditing ? 'Keep unchanged' : 'e.g. user123'}
+                  placeholder={isEditing ? 'Leave blank to keep unchanged' : 'Password'}
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:border-emerald-600 focus:outline-hidden font-mono text-sm bg-white"
                   required={!isEditing}
                 />
@@ -288,24 +286,24 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
           </div>
 
           {/* Actions */}
-          <div className="pt-3 border-t border-gray-200 flex items-center justify-end space-x-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2.5 rounded-xl text-gray-700 font-semibold hover:bg-gray-100 transition"
-            >
-              Cancel
-            </button>
+          <div className="pt-3 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-end gap-2 sm:gap-3">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition shadow-md disabled:opacity-50 text-base"
+              className="w-full sm:w-auto order-1 sm:order-2 px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition shadow-md disabled:opacity-50 text-base min-h-[44px]"
             >
               {isSubmitting
                 ? 'സേവ് ചെയ്യുന്നു...'
                 : isEditing
                 ? 'സേവ് ചെയ്യുക (Update Member)'
                 : 'അംഗത്തെ ചേർക്കുക (Add Member)'}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full sm:w-auto order-2 sm:order-1 px-4 py-2.5 rounded-xl text-gray-700 font-semibold hover:bg-gray-100 transition min-h-[44px]"
+            >
+              Cancel
             </button>
           </div>
         </form>

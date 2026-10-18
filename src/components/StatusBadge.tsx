@@ -2,12 +2,14 @@ import React from 'react';
 import { CheckCircle2, AlertCircle, Clock } from 'lucide-react';
 
 interface StatusBadgeProps {
-  status: 'paid' | 'pending' | 'partial' | 'active' | 'inactive';
+  status?: 'paid' | 'pending' | 'partial' | 'active' | 'inactive';
+  isPaid?: boolean;
   label?: string;
   size?: 'sm' | 'md' | 'lg';
 }
 
-export default function StatusBadge({ status, label, size = 'md' }: StatusBadgeProps) {
+export default function StatusBadge({ status, isPaid, label, size = 'md' }: StatusBadgeProps) {
+  const effectiveStatus = status || (isPaid ? 'paid' : 'pending');
   let bg = '';
   let text = '';
   let border = '';
@@ -26,7 +28,7 @@ export default function StatusBadge({ status, label, size = 'md' }: StatusBadgeP
     lg: 'w-5 h-5',
   };
 
-  switch (status) {
+  switch (effectiveStatus) {
     case 'paid':
       bg = 'bg-emerald-100';
       text = 'text-emerald-800';

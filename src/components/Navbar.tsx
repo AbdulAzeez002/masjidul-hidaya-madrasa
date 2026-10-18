@@ -98,48 +98,46 @@ export default function Navbar({ currentUser }: NavbarProps) {
             </nav>
           )}
 
-          {/* User Profile & Logout */}
-          <div className="hidden sm:flex items-center space-x-2 shrink-0">
+          {/* User Profile & Right Actions */}
+          <div className="flex items-center space-x-2 shrink-0">
             {currentUser ? (
-              <div className="flex items-center space-x-2">
-                <div className="flex items-center space-x-2 bg-slate-100/90 px-2.5 py-1.5 rounded-xl border border-slate-200/60">
-                  <div className="w-6 h-6 rounded-lg bg-emerald-700 text-white flex items-center justify-center text-xs font-bold">
-                    {isAdmin ? <Shield className="w-3.5 h-3.5" /> : currentUser.name.charAt(0)}
+              <>
+                <div className="hidden sm:flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 bg-slate-100/90 px-2.5 py-1.5 rounded-xl border border-slate-200/60">
+                    <div className="w-6 h-6 rounded-lg bg-emerald-700 text-white flex items-center justify-center text-xs font-bold">
+                      {isAdmin ? <Shield className="w-3.5 h-3.5" /> : currentUser.name.charAt(0)}
+                    </div>
+                    <span className="text-xs font-bold text-gray-800 max-w-[120px] truncate">
+                      {currentUser.name}
+                    </span>
                   </div>
-                  <span className="text-xs font-bold text-gray-800 max-w-[120px] truncate">
-                    {currentUser.name}
-                  </span>
+
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition"
+                    title="Logout"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Logout</span>
+                  </button>
                 </div>
 
+                {/* Mobile hamburger menu */}
                 <button
-                  onClick={handleLogout}
-                  className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition"
-                  title="Logout"
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="lg:hidden p-2 rounded-xl text-gray-700 hover:text-emerald-900 hover:bg-gray-100 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  aria-label="Toggle Navigation Menu"
                 >
-                  <LogOut className="w-3.5 h-3.5" />
-                  <span>Logout</span>
+                  {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                 </button>
-              </div>
+              </>
             ) : (
               <Link
                 href="/login"
-                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 transition shadow-xs"
+                className="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-emerald-700 hover:bg-emerald-800 transition shadow-xs min-h-[40px] flex items-center"
               >
                 Login
               </Link>
-            )}
-          </div>
-
-          {/* Mobile hamburger menu */}
-          <div className="lg:hidden flex items-center space-x-2">
-            {currentUser && (
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-xl text-gray-700 hover:text-emerald-900 hover:bg-gray-100"
-                aria-label="Toggle Navigation Menu"
-              >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
             )}
           </div>
         </div>

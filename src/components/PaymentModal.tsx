@@ -87,14 +87,14 @@ export default function PaymentModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-      <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-gray-200 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-xs">
+      <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-gray-200 overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header */}
-        <div className="bg-emerald-800 text-white px-6 py-4 flex items-center justify-between">
+        <div className="bg-emerald-800 text-white px-4 sm:px-6 py-4 flex items-center justify-between shrink-0">
           <div className="flex items-center space-x-2">
             <CheckCircle className="w-6 h-6 text-emerald-300" />
             <div>
-              <h2 className="text-xl font-bold">വരിസംഖ്യ സ്വീകരിക്കുക</h2>
+              <h2 className="text-lg sm:text-xl font-bold">വരിസംഖ്യ സ്വീകരിക്കുക</h2>
               <p className="text-xs text-emerald-200">Record Member Monthly Payment</p>
             </div>
           </div>
@@ -107,7 +107,7 @@ export default function PaymentModal({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 overflow-y-auto">
           {error && (
             <div className="p-3 bg-rose-50 border border-rose-300 rounded-xl text-rose-800 text-sm font-semibold">
               {error}
@@ -193,9 +193,8 @@ export default function PaymentModal({
                 step="10"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="50"
+                placeholder="Enter amount"
                 className="w-full px-3.5 py-2.5 rounded-xl border-2 border-gray-300 focus:border-emerald-600 focus:outline-hidden font-bold text-lg text-emerald-900"
-
                 required
               />
             </div>
@@ -248,26 +247,26 @@ export default function PaymentModal({
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="e.g. Paid in cash at Friday prayer, Advance, etc."
+              placeholder="Remarks or payment notes (optional)"
               className="w-full px-3.5 py-2 rounded-xl border-2 border-gray-300 focus:border-emerald-600 focus:outline-hidden text-sm"
             />
           </div>
 
           {/* Actions */}
-          <div className="pt-3 border-t border-gray-200 flex items-center justify-end space-x-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2.5 rounded-xl text-gray-700 font-semibold hover:bg-gray-100 transition"
-            >
-              Cancel
-            </button>
+          <div className="pt-3 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-end gap-2 sm:gap-3">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition shadow-md disabled:opacity-50 text-base"
+              className="w-full sm:w-auto order-1 sm:order-2 px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition shadow-md disabled:opacity-50 text-base min-h-[44px]"
             >
               {isSubmitting ? 'രേഖപ്പെടുത്തുന്നു...' : 'പണം രേഖപ്പെടുത്തുക (Record Payment)'}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full sm:w-auto order-2 sm:order-1 px-4 py-2.5 rounded-xl text-gray-700 font-semibold hover:bg-gray-100 transition min-h-[44px]"
+            >
+              Cancel
             </button>
           </div>
         </form>
