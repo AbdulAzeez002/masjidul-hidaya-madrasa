@@ -140,15 +140,17 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
           <div className="grid grid-cols-2 gap-3">
             {/* Member Code */}
             <div>
-              <label className="block text-sm font-bold text-gray-800 mb-1">
-                അംഗത്വം നമ്പർ (Member Code)
+              <label className="block text-sm font-bold text-gray-800 mb-1 flex items-center justify-between">
+                <span>അംഗത്വം നമ്പർ (Member Code)</span>
+                <span className="text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 uppercase font-bold">
+                  {isEditing ? 'Permanent' : 'Auto'}
+                </span>
               </label>
               <input
                 type="text"
-                value={memberCode}
-                onChange={(e) => setMemberCode(e.target.value)}
-                placeholder="e.g. NI-002"
-                className="w-full px-3.5 py-2.5 rounded-xl border-2 border-gray-300 focus:border-emerald-600 focus:outline-hidden font-mono text-sm"
+                value={isEditing ? memberCode : 'Auto-generated (NI-101...)'}
+                disabled
+                className="w-full px-3.5 py-2.5 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 text-gray-500 font-mono text-sm cursor-not-allowed select-none"
               />
             </div>
 

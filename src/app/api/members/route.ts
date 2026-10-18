@@ -66,20 +66,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Auto-generate guaranteed non-colliding memberCode if not provided
-    let code = memberCode?.trim();
-    if (!code) {
-      let num = 101;
-      while (all.some((m) => m.memberCode === `NI-${String(num).padStart(3, '0')}`)) {
-        num++;
+    // Always auto-generate sequential memberCode by the system (NI-101, NI-102...)
+    let maxNum = 100;
+    for (const m of all) {
+      if (m.memberCode && m.memberCode.startsWith('NI-')) {
+        const parsed = parseInt(m.memberCode.replace('NI-', ''), 10);
+        if (!isNaN(parsed) && parsed > maxNum) {
+          maxNum = parsed;
+        }
       }
-      code = `NI-${String(num).padStart(3, '0')}`;
-    } else if (all.some((m) => m.memberCode?.toLowerCase() === code.toLowerCase())) {
-      return NextResponse.json(
-        { error: `Member code "${code}" is already in use by another member` },
-        { status: 400 }
-      );
     }
+    let nextNum = maxNum + 1;
+    while (all.some((m) => m.memberCode === `NI-${String(nextNum).padStart(3, '0')}`)) {
+      nextNum++;
+    }
+    const code = `NI-${String(nextNum).padStart(3, '0')}`;
 
     const feeSettings = await getFeeSettings();
     const rawFee = monthlyFee ? Number(monthlyFee) : feeSettings.currentMonthlyFee;
