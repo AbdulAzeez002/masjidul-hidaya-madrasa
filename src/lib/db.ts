@@ -30,7 +30,7 @@ interface DatabaseSchema {
 
 // Generate realistic seed data
 function getInitialSeedData(): DatabaseSchema {
-  const adminHash = bcrypt.hashSync('admin123', 10);
+  const adminHash = bcrypt.hashSync('masjidulhidaya@admin9747', 10);
   const userHash = bcrypt.hashSync('user123', 10);
 
   const initialMembers: Member[] = [
@@ -44,7 +44,7 @@ function getInitialSeedData(): DatabaseSchema {
       joiningDate: '2026-01',
       username: 'admin',
       passwordHash: adminHash,
-      plainPasswordHint: 'admin123',
+      plainPasswordHint: 'masjidulhidaya@admin9747',
       role: 'admin',
       status: 'active',
       notes: 'Main system administrator',
