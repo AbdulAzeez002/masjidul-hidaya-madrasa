@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-scale: 1;
+}
+
+body {
+  font-size: calc(1rem * var(--font-scale, 1));
+  color: #1e293b;
+  background-color: #f8fafc;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* High contrast mode */
+body.high-contrast {
+  color: #000000;
+  background-color: #ffffff;
+}
+
+body.high-contrast .bg-white {
+  background-color: #ffffff !important;
+  border-color: #000000 !important;
+}
+
+body.high-contrast .text-gray-500,
+body.high-contrast .text-gray-600 {
+  color: #1f2937 !important;
+}
+
+/* Font size scalers */
+body.font-lg {
+  --font-scale: 1.15;
+}
+
+body.font-xl {
+  --font-scale: 1.3;
+}
+
+/* Print styling for receipts */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-receipt, #printable-receipt * {
+    visibility: visible;
+  }
+  #printable-receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+    background: white;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

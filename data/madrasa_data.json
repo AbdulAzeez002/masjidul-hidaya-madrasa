@@ -1,0 +1,79 @@
+{
+  "madrasaName": "Nasruthul Islam",
+  "branchName": "Kiyakethala Branch",
+  "standardMonthlyFee": 50,
+  "members": [
+    {
+      "id": "mem_admin",
+      "memberCode": "ADM-001",
+      "name": "Administrator",
+      "phone": "9847000001",
+      "address": "Madrasa Office, Kiyakethala",
+      "monthlyFee": 0,
+      "joiningDate": "2026-01",
+      "username": "admin",
+      "passwordHash": "$2a$10$iY8Ox35LQtt3yOJtUXukYOEkNEcJGUlbfReuePhMbCm5.YszZvndi",
+      "plainPasswordHint": "admin123",
+      "role": "admin",
+      "status": "active",
+      "notes": "Main System Administrator",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "mem_user",
+      "memberCode": "NI-001",
+      "name": "Test Member",
+      "phone": "9847123456",
+      "address": "Kiyakethala, Malappuram",
+      "monthlyFee": 50,
+      "joiningDate": "2026-01",
+      "username": "user",
+      "passwordHash": "$2a$10$g/wr.cxj0DrsSlSPxfjCsOE2Fuf5XhuqGCJK0RYxjiXOVCo3vXnWy",
+      "plainPasswordHint": "user123",
+      "role": "member",
+      "status": "active",
+      "notes": "Test Member Account",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "updatedAt": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "payments": [
+    {
+      "id": "pay_1",
+      "receiptNumber": "RCP-2026-0001",
+      "memberId": "mem_user",
+      "memberName": "Test Member",
+      "amount": 50,
+      "paymentDate": "2026-01-10",
+      "forMonth": 1,
+      "forYear": 2026,
+      "paymentMode": "Cash",
+      "notes": "Initial test subscription payment",
+      "recordedBy": "Admin",
+      "createdAt": "2026-01-10T10:00:00.000Z"
+    }
+  ],
+  "announcements": [
+    {
+      "id": "ann_1",
+      "title": "നസ്‌റത്തുൽ ഇസ്‌ലാം മദ്റസ പോർട്ടലിലേക്ക് സ്വാഗതം",
+      "content": "കിഴക്കേത്തല ശാഖ മദ്റസ പ്രതിമാസ വരിസംഖ്യ ട്രാക്കർ പോർട്ടൽ പ്രവർത്തനസജ്ജമായി.",
+      "date": "2026-01-01",
+      "priority": "normal",
+      "isPinned": true,
+      "createdBy": "Admin",
+      "createdAt": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+  "paymentSeq": 1,
+  "feeSchedule": [
+    {
+      "amount": 50,
+      "effectiveFrom": "2026-01",
+      "createdAt": "2026-01-01T00:00:00.000Z",
+      "notes": "Standard fixed monthly subscription"
+    }
+  ],
+  "lastUpdated": "2026-01-01T00:00:00.000Z"
+}

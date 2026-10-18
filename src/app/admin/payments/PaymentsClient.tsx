@@ -1,0 +1,489 @@
+'use client';
+
+import React, { useState } from 'react';
+import { Payment, MemberSummary } from '@/lib/types';
+import { formatCurrency, formatDate, MONTH_NAMES_SHORT, MONTH_NAMES } from '@/lib/utils';
+import PaymentModal from '@/components/PaymentModal';
+import ReceiptModal from '@/components/ReceiptModal';
+import StatusBadge from '@/components/StatusBadge';
+import FixedFeeModal from '@/components/FixedFeeModal';
+import { useRouter } from 'next/navigation';
+import {
+  CreditCard,
+  PlusCircle,
+  Table as TableIcon,
+  List,
+  Printer,
+  Calendar,
+  Search,
+  Trash2,
+  Check,
+  X as XIcon,
+  Clock,
+  Download,
+  IndianRupee,
+} from 'lucide-react';
+
+interface PaymentsClientProps {
+  initialPayments: Payment[];
+  members: MemberSummary[];
+  currentPeriod: { year: number; month: number; key: string };
+}
+
+export default function PaymentsClient({
+  initialPayments,
+  members,
+  currentPeriod,
+}: PaymentsClientProps) {
+  const router = useRouter();
+  const [payments, setPayments] = useState<Payment[]>(initialPayments);
+  const [activeTab, setActiveTab] = useState<'matrix' | 'history'>('matrix');
+  const [selectedYear, setSelectedYear] = useState<number>(currentPeriod.year);
+  const [searchMember, setSearchMember] = useState('');
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showFixedFeeModal, setShowFixedFeeModal] = useState(false);
+  const [preSelectedMemberId, setPreSelectedMemberId] = useState<string | undefined>(undefined);
+  const [selectedReceipt, setSelectedReceipt] = useState<Payment | null>(null);
+
+
+  // Filter payments for the selected year
+  const yearPayments = payments.filter((p) => p.forYear === selectedYear);
+
+  // Build a lookup map: memberId -> month (1-12) -> total paid for that month
+  const paymentMatrix: Record<string, Record<number, number>> = {};
+  yearPayments.forEach((p) => {
+    if (!paymentMatrix[p.memberId]) {
+      paymentMatrix[p.memberId] = {};
+    }
+    paymentMatrix[p.memberId][p.forMonth] =
+      (paymentMatrix[p.memberId][p.forMonth] || 0) + p.amount;
+  });
+
+  const filteredMembers = members.filter((m) =>
+    m.name.toLowerCase().includes(searchMember.toLowerCase()) ||
+    m.memberCode.toLowerCase().includes(searchMember.toLowerCase())
+  );
+
+  const handleDeletePayment = async (id: string, receiptNo: string) => {
+    if (!window.confirm(`Are you sure you want to delete payment ${receiptNo}?`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/payments/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setPayments((prev) => prev.filter((p) => p.id !== id));
+        router.refresh();
+      } else {
+        alert('Failed to delete payment');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Error deleting payment');
+    }
+  };
+
+  const openPaymentForCell = (memberId: string) => {
+    setPreSelectedMemberId(memberId);
+    setShowPaymentModal(true);
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 space-y-8">
+      {/* Header */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-md border-2 border-emerald-100 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <div className="flex items-center space-x-2 text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 inline-flex mb-2">
+            <CreditCard className="w-4 h-4 text-emerald-700" />
+            <span>വരിസംഖ്യ കളക്ഷൻ മാനേജ്‌മെന്റ്</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
+            വരിസംഖ്യ റെക്കോർഡുകളും മാസ ചാർട്ടും (Payments & Grid)
+          </h1>
+          <p className="text-sm text-gray-600 font-medium mt-1">
+            ആരൊക്കെ പണം നൽകി, ആരൊക്കെ നൽകിയില്ല എന്ന് ഒറ്റനോട്ടത്തിൽ കണ്ടെത്തുക.
+          </p>
+        </div>
+
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => setShowFixedFeeModal(true)}
+            className="flex items-center space-x-2 px-4 py-3 rounded-2xl bg-white hover:bg-emerald-50 text-emerald-900 border-2 border-emerald-600 font-bold transition text-sm"
+          >
+            <IndianRupee className="w-4 h-4 text-emerald-700" />
+            <span>നിശ്ചിത വരിസംഖ്യ ({formatCurrency(members[0]?.currentMonthFee || 50)})</span>
+          </button>
+
+
+          <button
+            onClick={() => window.print()}
+            className="hidden sm:flex items-center space-x-2 px-4 py-3 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold transition text-sm"
+          >
+            <Printer className="w-4 h-4" />
+            <span>പ്രിന്റ് ചെയ്യുക</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setPreSelectedMemberId(undefined);
+              setShowPaymentModal(true);
+            }}
+            className="flex items-center space-x-2 px-5 py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition shadow-md text-base"
+          >
+            <PlusCircle className="w-5 h-5" />
+            <span>വരിസംഖ്യ സ്വീകരിക്കുക</span>
+          </button>
+        </div>
+      </div>
+
+
+      {/* Control Bar: Tabs, Year Selector, Search */}
+      <div className="bg-white rounded-3xl p-6 shadow-md border-2 border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        {/* View Toggle Tabs */}
+        <div className="flex items-center space-x-2 bg-gray-100 p-1.5 rounded-2xl">
+          <button
+            onClick={() => setActiveTab('matrix')}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-bold transition ${
+              activeTab === 'matrix'
+                ? 'bg-emerald-700 text-white shadow-sm'
+                : 'text-gray-700 hover:text-gray-900'
+            }`}
+          >
+            <TableIcon className="w-4 h-4" />
+            <span>പ്രതിമാസ ചാർട്ട് (Monthly Grid)</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('history')}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-bold transition ${
+              activeTab === 'history'
+                ? 'bg-emerald-700 text-white shadow-sm'
+                : 'text-gray-700 hover:text-gray-900'
+            }`}
+          >
+            <List className="w-4 h-4" />
+            <span>രസീതുകളുടെ പട്ടിക (Receipts)</span>
+          </button>
+        </div>
+
+        {/* Year & Search Filters */}
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Year selector */}
+          <div className="flex items-center space-x-2">
+            <Calendar className="w-4 h-4 text-emerald-700" />
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(Number(e.target.value))}
+              className="px-3 py-2 rounded-xl border-2 border-gray-200 focus:border-emerald-600 focus:outline-hidden font-bold text-gray-900 text-sm bg-white"
+            >
+              {[2024, 2025, 2026, 2027, 2028].map((y) => (
+                <option key={y} value={y}>
+                  വർഷം: {y}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Member Search */}
+          <div className="relative">
+            <Search className="w-4 h-4 absolute left-3 top-2.5 text-gray-400" />
+            <input
+              type="text"
+              value={searchMember}
+              onChange={(e) => setSearchMember(e.target.value)}
+              placeholder="അംഗത്തെ തിരയുക..."
+              className="pl-9 pr-3 py-1.5 rounded-xl border-2 border-gray-200 focus:border-emerald-600 focus:outline-hidden text-sm"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* VIEW 1: MONTHLY MATRIX GRID */}
+      {activeTab === 'matrix' && (
+        <div className="bg-white rounded-3xl shadow-md border-2 border-gray-200 p-6 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 pb-3">
+            <div>
+              <h2 className="text-xl font-black text-gray-900">
+                {selectedYear} വർഷത്തെ വരിസംഖ്യ ചാർട്ട് (Who Paid & Who Did Not)
+              </h2>
+              <p className="text-xs text-gray-500">
+                പച്ച നിറം: അടച്ചു (Paid) | ചുവപ്പ്: ബാക്കി (Pending Due)
+              </p>
+            </div>
+
+            {/* Legend */}
+            <div className="flex items-center space-x-4 text-xs font-bold">
+              <span className="flex items-center text-emerald-800">
+                <span className="w-3.5 h-3.5 rounded-full bg-emerald-500 inline-block mr-1"></span>
+                അടച്ചു (Paid)
+              </span>
+              <span className="flex items-center text-rose-800">
+                <span className="w-3.5 h-3.5 rounded-full bg-rose-400 inline-block mr-1"></span>
+                ബാക്കി (Due)
+              </span>
+              <span className="flex items-center text-gray-400">
+                <span className="w-3.5 h-3.5 rounded-full bg-gray-200 inline-block mr-1"></span>
+                ചേരുന്നതിന് മുൻപ്
+              </span>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-center border-collapse">
+              <thead>
+                <tr className="bg-emerald-900 text-white text-xs font-bold uppercase tracking-wider">
+                  <th className="py-3 px-3 text-left rounded-l-xl min-w-[180px]">അംഗം (Member)</th>
+                  <th className="py-3 px-2 min-w-[70px]">മാസ തുക</th>
+                  {MONTH_NAMES_SHORT.map((m, idx) => (
+                    <th key={m} className="py-3 px-1 min-w-[55px]">
+                      {m}
+                    </th>
+                  ))}
+                  <th className="py-3 px-3 rounded-r-xl min-w-[90px] text-right">ആകെ ബാക്കി</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 text-xs">
+                {filteredMembers.map((m) => {
+                  const joinYear = Number(m.joiningDate.slice(0, 4));
+                  const joinMonth = Number(m.joiningDate.slice(5, 7)) || 1;
+
+                  return (
+                    <tr key={m.id} className="hover:bg-emerald-50/30 transition">
+                      {/* Member Info */}
+                      <td className="py-3 px-3 text-left">
+                        <div className="font-bold text-gray-900 text-sm">{m.name}</div>
+                        <div className="text-[11px] font-mono text-emerald-800 font-semibold">
+                          {m.memberCode}
+                        </div>
+                      </td>
+
+                      {/* Monthly Fee */}
+                      <td className="py-3 px-2 font-bold text-gray-700">
+                        {formatCurrency(m.monthlyFee)}
+                      </td>
+
+                      {/* 12 Months Cells */}
+                      {MONTH_NAMES_SHORT.map((_, idx) => {
+                        const monthNum = idx + 1;
+                        const paidAmount = paymentMatrix[m.id]?.[monthNum] || 0;
+                        const isJoined =
+                          selectedYear > joinYear ||
+                          (selectedYear === joinYear && monthNum >= joinMonth);
+
+                        const isFuture =
+                          selectedYear > currentPeriod.year ||
+                          (selectedYear === currentPeriod.year && monthNum > currentPeriod.month);
+
+                        if (!isJoined) {
+                          return (
+                            <td key={monthNum} className="py-3 px-1 text-gray-300 font-bold">
+                              -
+                            </td>
+                          );
+                        }
+
+                        const monthTargetFee =
+                          isFuture && m.nextMonthFee ? m.nextMonthFee : (m.currentMonthFee || m.monthlyFee);
+
+                        if (paidAmount >= monthTargetFee) {
+                          return (
+                            <td key={monthNum} className="py-2 px-1">
+                              <span
+                                onClick={() => openPaymentForCell(m.id)}
+                                title={`Paid: ₹${paidAmount} for ${MONTH_NAMES[idx]}`}
+                                className="inline-flex items-center justify-center w-full py-1.5 px-1 bg-emerald-100 text-emerald-900 font-bold rounded-lg border border-emerald-300 cursor-pointer hover:bg-emerald-200 transition"
+                              >
+                                <Check className="w-3.5 h-3.5 text-emerald-700 inline" />
+                              </span>
+                            </td>
+                          );
+                        }
+
+                        if (paidAmount > 0) {
+                          return (
+                            <td key={monthNum} className="py-2 px-1">
+                              <span
+                                onClick={() => openPaymentForCell(m.id)}
+                                title={`Partial: ₹${paidAmount} of ₹${monthTargetFee}`}
+                                className="inline-flex items-center justify-center w-full py-1.5 px-0.5 bg-amber-100 text-amber-900 font-bold rounded-lg border border-amber-300 cursor-pointer hover:bg-amber-200 transition text-[10px]"
+                              >
+                                ₹{paidAmount}
+                              </span>
+                            </td>
+                          );
+                        }
+
+
+                        // Not paid
+                        return (
+                          <td key={monthNum} className="py-2 px-1">
+                            <span
+                              onClick={() => openPaymentForCell(m.id)}
+                              title={isFuture ? 'Future Month' : 'Pending - Click to record payment'}
+                              className={`inline-flex items-center justify-center w-full py-1.5 px-1 font-bold rounded-lg border cursor-pointer transition ${
+                                isFuture
+                                  ? 'bg-gray-50 text-gray-400 border-gray-200 hover:bg-gray-100'
+                                  : 'bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100'
+                              }`}
+                            >
+                              {isFuture ? '·' : <XIcon className="w-3.5 h-3.5 text-rose-600 inline" />}
+                            </span>
+                          </td>
+                        );
+                      })}
+
+                      {/* Total Pending Balance */}
+                      <td className="py-3 px-3 text-right">
+                        <span
+                          className={`font-black text-sm ${
+                            m.pendingBalance > 0 ? 'text-rose-600' : 'text-emerald-700'
+                          }`}
+                        >
+                          {formatCurrency(m.pendingBalance)}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* VIEW 2: RECEIPTS & HISTORY TABLE */}
+      {activeTab === 'history' && (
+        <div className="bg-white rounded-3xl shadow-md border-2 border-gray-200 p-6 space-y-4">
+          <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+            <div>
+              <h2 className="text-xl font-black text-gray-900">
+                രസീതുകളുടെ പട്ടിക (Payment Receipts Log)
+              </h2>
+              <p className="text-xs text-gray-500">
+                മദ്റസ ഓഫീസിൽ രേഖപ്പെടുത്തിയ മുഴുവൻ പേയ്മെന്റുകളും
+              </p>
+            </div>
+            <span className="text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+              {yearPayments.length} പേയ്മെന്റുകൾ ({selectedYear})
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-gray-100 text-gray-700 text-xs font-bold uppercase tracking-wider">
+                  <th className="py-3 px-4 rounded-l-xl">രസീത് നമ്പർ</th>
+                  <th className="py-3 px-4">അംഗം</th>
+                  <th className="py-3 px-4">തീയതി</th>
+                  <th className="py-3 px-4">ഏത് മാസം</th>
+                  <th className="py-3 px-4">തുക</th>
+                  <th className="py-3 px-4">രീതി</th>
+                  <th className="py-3 px-4">കുറിപ്പ്</th>
+                  <th className="py-3 px-4 rounded-r-xl text-right">നടപടികൾ</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 text-sm">
+                {yearPayments.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="py-12 text-center text-gray-500 font-medium">
+                      {selectedYear} വർഷത്തിൽ പേയ്മെന്റുകൾ ഒന്നും രേഖപ്പെടുത്തിയിട്ടില്ല.
+                    </td>
+                  </tr>
+                ) : (
+                  yearPayments.map((p) => {
+                    const mName = MONTH_NAMES[p.forMonth - 1] || `Month ${p.forMonth}`;
+                    return (
+                      <tr key={p.id} className="hover:bg-gray-50 transition">
+                        <td className="py-3.5 px-4 font-mono font-bold text-emerald-900">
+                          {p.receiptNumber}
+                        </td>
+                        <td className="py-3.5 px-4 font-bold text-gray-900 text-base">
+                          {p.memberName}
+                        </td>
+                        <td className="py-3.5 px-4 text-gray-600 font-medium">
+                          {formatDate(p.paymentDate)}
+                        </td>
+                        <td className="py-3.5 px-4 font-semibold text-gray-900">
+                          {mName} {p.forYear}
+                        </td>
+                        <td className="py-3.5 px-4 font-black text-emerald-800 text-base">
+                          {formatCurrency(p.amount)}
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-gray-100 text-gray-800 border">
+                            {p.paymentMode}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 text-xs text-gray-500 italic">
+                          {p.notes || '-'}
+                        </td>
+                        <td className="py-3.5 px-4 text-right">
+                          <div className="flex items-center justify-end space-x-2">
+                            <button
+                              onClick={() => setSelectedReceipt(p)}
+                              className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs border border-emerald-300 transition"
+                            >
+                              <Printer className="w-3.5 h-3.5" />
+                              <span>പ്രിന്റ്</span>
+                            </button>
+                            <button
+                              onClick={() => handleDeletePayment(p.id, p.receiptNumber)}
+                              className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition"
+                              title="Delete Payment"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Modals */}
+      {showPaymentModal && (
+        <PaymentModal
+          members={members}
+          preSelectedMemberId={preSelectedMemberId}
+          onClose={() => setShowPaymentModal(false)}
+          onSuccess={(newP) => {
+            setShowPaymentModal(false);
+            setPayments((prev) => [newP, ...prev]);
+            setSelectedReceipt(newP);
+            router.refresh();
+          }}
+        />
+      )}
+
+      {selectedReceipt && (
+        <ReceiptModal
+          payment={selectedReceipt}
+          onClose={() => setSelectedReceipt(null)}
+        />
+      )}
+
+      {showFixedFeeModal && (
+        <FixedFeeModal
+          currentFee={members[0]?.currentMonthFee || 50}
+          upcomingFee={
+            members[0]?.nextMonthFee && members[0]?.nextMonthFee !== (members[0]?.currentMonthFee || 50)
+              ? { amount: members[0].nextMonthFee, effectiveFrom: `${currentPeriod.year}-${String(currentPeriod.month + 1).padStart(2, '0')}` }
+              : undefined
+          }
+          onClose={() => setShowFixedFeeModal(false)}
+
+          onSuccess={() => {
+            setShowFixedFeeModal(false);
+            router.refresh();
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
