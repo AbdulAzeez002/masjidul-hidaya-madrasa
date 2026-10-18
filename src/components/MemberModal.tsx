@@ -68,7 +68,7 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
           memberCode: memberCode.trim(),
           phone: phone.trim(),
           address: address.trim(),
-          monthlyFee: Number(monthlyFee) || 500,
+          monthlyFee: Number(monthlyFee) || 50,
           joiningDate,
           username: username.trim().toLowerCase(),
           password: password.trim(),

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession, hashPassword } from '@/lib/auth';
-import { getMemberSummaries, createMember, getAllMembers, getCurrentFixedFee } from '@/lib/db';
+import { getMemberSummaries, createMember, getAllMembers, getFeeSettings } from '@/lib/db';
 
 
 export async function GET(req: NextRequest) {
@@ -58,17 +58,39 @@ export async function POST(req: NextRequest) {
     const passwordHash = await hashPassword(password);
     const all = await getAllMembers();
 
-    // Auto-generate memberCode if not given
-    const code =
-      memberCode ||
-      `NI-${String(all.filter((m) => m.role === 'member').length + 101).padStart(3, '0')}`;
+    const cleanUsername = username.trim().toLowerCase();
+    if (all.some((m) => m.username.toLowerCase() === cleanUsername)) {
+      return NextResponse.json(
+        { error: `Username "${username.trim()}" is already in use by another member` },
+        { status: 400 }
+      );
+    }
+
+    // Auto-generate guaranteed non-colliding memberCode if not provided
+    let code = memberCode?.trim();
+    if (!code) {
+      let num = 101;
+      while (all.some((m) => m.memberCode === `NI-${String(num).padStart(3, '0')}`)) {
+        num++;
+      }
+      code = `NI-${String(num).padStart(3, '0')}`;
+    } else if (all.some((m) => m.memberCode?.toLowerCase() === code.toLowerCase())) {
+      return NextResponse.json(
+        { error: `Member code "${code}" is already in use by another member` },
+        { status: 400 }
+      );
+    }
+
+    const feeSettings = await getFeeSettings();
+    const rawFee = monthlyFee ? Number(monthlyFee) : feeSettings.currentMonthlyFee;
+    const cleanFee = !isNaN(rawFee) && rawFee > 0 ? Math.round(rawFee) : feeSettings.currentMonthlyFee;
 
     const newMember = await createMember({
       memberCode: code,
       name: name.trim(),
       phone: phone?.trim() || '',
       address: address?.trim() || '',
-      monthlyFee: getCurrentFixedFee(),
+      monthlyFee: cleanFee,
       joiningDate: joiningDate || '2026-01',
 
       username: username.trim(),

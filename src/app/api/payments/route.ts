@@ -52,9 +52,27 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { memberId, amount, paymentDate, forMonth, forYear, paymentMode, notes } = body;
 
-    if (!memberId || !amount || !paymentDate || !forMonth || !forYear) {
+    const numAmount = Math.round(Number(amount));
+    if (isNaN(numAmount) || numAmount <= 0) {
       return NextResponse.json(
-        { error: 'Member, amount, payment date, month, and year are required' },
+        { error: 'Payment amount must be a valid positive number greater than ₹0' },
+        { status: 400 }
+      );
+    }
+
+    const numMonth = Math.floor(Number(forMonth));
+    const numYear = Math.floor(Number(forYear));
+    if (isNaN(numMonth) || numMonth < 1 || numMonth > 12 || isNaN(numYear) || numYear < 2020 || numYear > 2100) {
+      return NextResponse.json(
+        { error: 'Valid payment month (1-12) and year are required' },
+        { status: 400 }
+      );
+    }
+
+    const parsedDate = new Date(paymentDate);
+    if (isNaN(parsedDate.getTime())) {
+      return NextResponse.json(
+        { error: 'Valid payment date is required' },
         { status: 400 }
       );
     }
@@ -67,10 +85,10 @@ export async function POST(req: NextRequest) {
     const newPayment = await createPayment({
       memberId: member.id,
       memberName: member.name,
-      amount: Number(amount),
-      paymentDate,
-      forMonth: Number(forMonth),
-      forYear: Number(forYear),
+      amount: numAmount,
+      paymentDate: paymentDate.trim(),
+      forMonth: numMonth,
+      forYear: numYear,
       paymentMode: paymentMode || 'Cash',
       notes: notes?.trim() || '',
       recordedBy: session.name || 'Admin',

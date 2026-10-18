@@ -65,7 +65,7 @@ export function getMonthsCount(startYearMonth: string, endYearMonth: string): nu
   }
 
   const months = (eYear - sYear) * 12 + (eMonth - sMonth) + 1;
-  return Math.max(1, months);
+  return Math.max(0, months);
 }
 
 export function getCurrentYearMonth(): { year: number; month: number; key: string } {

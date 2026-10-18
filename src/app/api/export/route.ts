@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
-import fs from 'fs';
-import path from 'path';
+import { getAllMembers, getAllPayments, getAllAnnouncements, getFeeSettings } from '@/lib/db';
 
 export async function GET() {
   try {
@@ -10,16 +9,25 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized: Admin access required' }, { status: 403 });
     }
 
-    const dbPath = path.join(process.cwd(), 'data', 'madrasa_data.json');
-    if (!fs.existsSync(dbPath)) {
-      return NextResponse.json({ error: 'Database file not found' }, { status: 404 });
-    }
+    const members = await getAllMembers();
+    const payments = await getAllPayments();
+    const announcements = await getAllAnnouncements();
+    const feeSettings = await getFeeSettings();
 
-    const fileContent = fs.readFileSync(dbPath, 'utf-8');
+    const backupData = {
+      madrasaName: 'Nasruthul Islam',
+      branchName: 'Kiyakethala Branch',
+      exportedAt: new Date().toISOString(),
+      feeSettings,
+      members,
+      payments,
+      announcements,
+    };
+
     const dateStr = new Date().toISOString().split('T')[0];
     const filename = `nasruthul_islam_backup_${dateStr}.json`;
 
-    return new NextResponse(fileContent, {
+    return new NextResponse(JSON.stringify(backupData, null, 2), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',

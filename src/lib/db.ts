@@ -144,7 +144,7 @@ function ensureLocalDataFile(): DatabaseSchema {
     dbCache = JSON.parse(raw);
     if (!dbCache?.feeSchedule) {
       dbCache!.feeSchedule = [
-        { amount: 500, effectiveFrom: '2026-01', createdAt: new Date().toISOString() },
+        { amount: 50, effectiveFrom: '2026-01', createdAt: new Date().toISOString() },
       ];
     }
     return dbCache!;
@@ -210,11 +210,11 @@ export async function getFeeSchedule(): Promise<FeeScheduleItem[]> {
     if (metaDoc?.feeSchedule && Array.isArray(metaDoc.feeSchedule)) {
       return metaDoc.feeSchedule;
     }
-    return [{ amount: 500, effectiveFrom: '2026-01', createdAt: '2026-01-01T00:00:00.000Z' }];
+    return [{ amount: 50, effectiveFrom: '2026-01', createdAt: '2026-01-01T00:00:00.000Z' }];
   }
 
   const db = ensureLocalDataFile();
-  return db.feeSchedule || [{ amount: 500, effectiveFrom: '2026-01', createdAt: '2026-01-01T00:00:00.000Z' }];
+  return db.feeSchedule || [{ amount: 50, effectiveFrom: '2026-01', createdAt: '2026-01-01T00:00:00.000Z' }];
 }
 
 export function getCurrentFixedFee(forMonthKey?: string): number {
@@ -222,7 +222,7 @@ export function getCurrentFixedFee(forMonthKey?: string): number {
   const db = ensureLocalDataFile();
   const schedule = (db.feeSchedule || []).slice().sort((a, b) => a.effectiveFrom.localeCompare(b.effectiveFrom));
 
-  let currentFee = 500;
+  let currentFee = 50;
   for (const item of schedule) {
     if (item.effectiveFrom <= targetKey) {
       currentFee = item.amount;
@@ -235,7 +235,7 @@ export async function getFeeSettings(): Promise<FeeSettings> {
   const currentKey = getCurrentYearMonth().key;
   const schedule = (await getFeeSchedule()).slice().sort((a, b) => a.effectiveFrom.localeCompare(b.effectiveFrom));
 
-  let currentMonthlyFee = 500;
+  let currentMonthlyFee = 50;
   let effectiveMonth = '2026-01';
   let upcomingFee: { amount: number; effectiveFrom: string } | undefined = undefined;
 
@@ -612,8 +612,37 @@ export async function getMemberSummaries(): Promise<MemberSummary[]> {
 
       const memberMonthlyFee = member.monthlyFee || currentFee;
       const joinKey = member.joiningDate.length === 7 ? member.joiningDate : member.joiningDate.slice(0, 7);
-      const activeMonths = getMonthsCount(joinKey, currentKey);
-      const expectedTotal = activeMonths * memberMonthlyFee;
+
+      // Accurately compute expected dues month-by-month according to the fee schedule in effect for each month
+      let expectedTotal = 0;
+      if (joinKey <= currentKey) {
+        const [sYear, sMonth] = joinKey.split('-').map(Number);
+        const [eYear, eMonth] = currentKey.split('-').map(Number);
+        if (!isNaN(sYear) && !isNaN(sMonth) && !isNaN(eYear) && !isNaN(eMonth)) {
+          const sortedSchedule = feeSettings.feeSchedule.slice().sort((a, b) => a.effectiveFrom.localeCompare(b.effectiveFrom));
+          let y = sYear;
+          let m = sMonth;
+          while (y < eYear || (y === eYear && m <= eMonth)) {
+            const mKey = `${y}-${m < 10 ? '0' + m : m}`;
+            let feeForMonth = memberMonthlyFee;
+            for (const item of sortedSchedule) {
+              if (item.effectiveFrom <= mKey) {
+                feeForMonth = item.amount;
+              }
+            }
+            expectedTotal += feeForMonth;
+            m++;
+            if (m > 12) {
+              m = 1;
+              y++;
+            }
+          }
+        } else {
+          const activeMonths = getMonthsCount(joinKey, currentKey);
+          expectedTotal = activeMonths * memberMonthlyFee;
+        }
+      }
+
       const pendingBalance = Math.max(0, expectedTotal - totalPaid);
 
       const currentMonthPayments = memberPayments.filter(
