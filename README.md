@@ -47,17 +47,7 @@ Open your browser and navigate to: **`http://localhost:3000`**
 
 ---
 
-### 🔑 Demo Logins
-
-| Role | Username | Password | Notes |
-|---|---|---|---|
-| **Admin** | `admin` | `admin123` | Full access to members, payments, reports, announcements |
-| **Member (All Paid)** | `kunju101` | `user123` | Kunjumuhammad Haji (NI-101) - Zero dues |
-| **Member (Pending Dues)** | `moideen103` | `user123` | Moideen Kutty (NI-103) - 3 months pending arrears |
-| **Member (Senior Trustee)** | `abdu102` | `user123` | Aboobacker Musliyar (NI-102) |
-
----
-
 ### 📁 Database & Persistence
-- Data is stored in atomic JSON format at `data/madrasa_data.json`.
-- Automatic backups can be downloaded directly from the **Reports** section.
+- Primary persistent storage is hosted on **MongoDB Atlas Cloud**.
+- Collections: `members`, `payments`, `announcements`, and `meta`.
+- Live JSON database backups can be exported anytime directly from the **Reports** section.

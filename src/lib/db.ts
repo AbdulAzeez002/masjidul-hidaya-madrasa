@@ -1,5 +1,3 @@
-import fs from 'fs';
-import path from 'path';
 import bcrypt from 'bcryptjs';
 import clientPromise from './mongodb';
 import {
@@ -13,8 +11,6 @@ import {
 } from './types';
 import { getCurrentYearMonth, getMonthsCount, getNextYearMonth } from './utils';
 
-const DATA_DIR = path.join(process.cwd(), 'data');
-const DB_FILE = path.join(DATA_DIR, 'madrasa_data.json');
 const DB_NAME = 'nasruthul_islam';
 
 interface DatabaseSchema {
@@ -93,45 +89,15 @@ function getInitialSeedData(): DatabaseSchema {
 let dbCache: DatabaseSchema | null = null;
 
 function ensureLocalDataFile(): DatabaseSchema {
-  if (dbCache) return dbCache;
-
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+  if (!dbCache) {
+    dbCache = getInitialSeedData();
   }
-
-  if (!fs.existsSync(DB_FILE)) {
-    const initial = getInitialSeedData();
-    fs.writeFileSync(DB_FILE, JSON.stringify(initial, null, 2), 'utf-8');
-    dbCache = initial;
-    return initial;
-  }
-
-  try {
-    const raw = fs.readFileSync(DB_FILE, 'utf-8');
-    dbCache = JSON.parse(raw);
-    if (!dbCache?.feeSchedule) {
-      dbCache!.feeSchedule = [
-        { amount: 50, effectiveFrom: '2026-01', createdAt: new Date().toISOString() },
-      ];
-    }
-    return dbCache!;
-  } catch (error) {
-    const initial = getInitialSeedData();
-    fs.writeFileSync(DB_FILE, JSON.stringify(initial, null, 2), 'utf-8');
-    dbCache = initial;
-    return initial;
-  }
+  return dbCache;
 }
 
 function saveLocalDatabase(data: DatabaseSchema) {
   data.lastUpdated = new Date().toISOString();
   dbCache = data;
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-  const tempFile = `${DB_FILE}.tmp`;
-  fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf-8');
-  fs.renameSync(tempFile, DB_FILE);
 }
 
 // MongoDB helper: get DB and ensure seed if empty
