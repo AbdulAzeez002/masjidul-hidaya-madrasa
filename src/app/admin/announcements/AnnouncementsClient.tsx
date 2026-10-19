@@ -70,13 +70,13 @@ export default function AnnouncementsClient({ initialAnnouncements }: Announceme
         <div>
           <div className="flex items-center space-x-2 text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 inline-flex mb-2">
             <Megaphone className="w-4 h-4 text-emerald-700" />
-            <span>മദ്റസ അറിയിപ്പുകൾ</span>
+            <span>Madrasa Announcements</span>
           </div>
           <h1 className="text-xl sm:text-3xl font-black text-gray-900 tracking-tight">
-            അറിയിപ്പ് ബോർഡ് (Announcements)
+            Notice Board & Announcements
           </h1>
           <p className="text-xs sm:text-sm text-gray-600 font-medium mt-1">
-            യോഗങ്ങൾ, വരിസംഖ്യ കളക്ഷൻ അറിയിപ്പുകൾ, മദ്റസ വിശേഷങ്ങൾ അംഗങ്ങളുമായി പങ്കുവെക്കുക.
+            Share meetings, collection notices, and institution updates with members.
           </p>
         </div>
 
@@ -88,7 +88,7 @@ export default function AnnouncementsClient({ initialAnnouncements }: Announceme
           className="flex items-center justify-center space-x-2 w-full md:w-auto px-5 py-3 rounded-xl sm:rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition shadow-sm text-sm sm:text-base min-h-[44px]"
         >
           <PlusCircle className="w-5 h-5" />
-          <span>പുതിയ അറിയിപ്പ് നൽകുക</span>
+          <span>+ New Announcement</span>
         </button>
       </div>
 
@@ -96,7 +96,7 @@ export default function AnnouncementsClient({ initialAnnouncements }: Announceme
       <div className="space-y-4">
         {announcements.length === 0 ? (
           <div className="bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 text-center text-gray-500 shadow-sm border border-gray-200 text-sm sm:text-base">
-            നിലവിൽ അറിയിപ്പുകൾ ഒന്നുമില്ല. മുകളിൽ കാണുന്ന ബട്ടൺ വഴി പുതിയ അറിയിപ്പുകൾ നൽകാം.
+            No announcements posted yet. Click the button above to publish a new notice.
           </div>
         ) : (
           announcements.map((ann) => (
@@ -114,14 +114,14 @@ export default function AnnouncementsClient({ initialAnnouncements }: Announceme
                     {ann.isPinned && (
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300">
                         <Pin className="w-3.5 h-3.5 mr-1 text-amber-700" />
-                        പ്രധാനം (Pinned)
+                        Pinned
                       </span>
                     )}
 
                     {ann.priority === 'urgent' && (
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300">
                         <AlertTriangle className="w-3.5 h-3.5 mr-1 text-rose-600" />
-                        അടിയന്തിരം (Urgent)
+                        Urgent
                       </span>
                     )}
 
@@ -141,7 +141,7 @@ export default function AnnouncementsClient({ initialAnnouncements }: Announceme
 
                   <div className="text-xs text-gray-500 font-semibold pt-2 flex items-center">
                     <User className="w-3.5 h-3.5 mr-1 text-gray-400" />
-                    അറിയിപ്പ് നൽകിയത്: <span className="text-gray-800 font-bold ml-1">{ann.author}</span>
+                    Posted by: <span className="text-gray-800 font-bold ml-1">{ann.author}</span>
                   </div>
                 </div>
 

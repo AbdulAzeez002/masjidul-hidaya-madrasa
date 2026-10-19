@@ -33,6 +33,12 @@ export interface Payment {
   notes?: string;
   recordedBy: string;
   createdAt: string;
+  isAdvance?: boolean;
+  advanceBatchId?: string;
+  advanceTotalAmount?: number;
+  advanceTotalMonths?: number;
+  advanceMonthIndex?: number;
+  advancePeriodLabel?: string;
 }
 
 export interface Announcement {

@@ -76,8 +76,8 @@ export default function FixedFeeModal({
               <IndianRupee className="w-6 h-6 text-emerald-200" />
             </div>
             <div>
-              <h2 className="text-lg sm:text-xl font-bold">നിശ്ചിത വരിസംഖ്യ മാറ്റുക</h2>
-              <p className="text-xs text-emerald-200">Change Madrasa Fixed Monthly Fee</p>
+              <h2 className="text-lg sm:text-xl font-bold">Update Fixed Monthly Fee</h2>
+              <p className="text-xs text-emerald-200">Adjust standard madrasa membership rate</p>
             </div>
           </div>
           <button
@@ -101,15 +101,15 @@ export default function FixedFeeModal({
           <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex items-center justify-between">
             <div>
               <span className="text-xs text-gray-500 uppercase font-bold tracking-wider block">
-                ഈ മാസത്തെ നിരക്ക് ({currentMonthName} {currentPeriod.year})
+                Current Rate ({currentMonthName} {currentPeriod.year})
               </span>
               <span className="text-2xl font-black text-gray-900 mt-0.5 block">
-                {formatCurrency(currentFee)} <span className="text-xs font-normal text-gray-500">/ മാസം (Fixed)</span>
+                {formatCurrency(currentFee)} <span className="text-xs font-normal text-gray-500">/ month (Fixed)</span>
               </span>
             </div>
             <div className="text-right">
               <span className="inline-flex items-center text-xs font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">
-                നിലവിൽ സജീവം
+                Currently Active
               </span>
             </div>
           </div>
@@ -120,11 +120,11 @@ export default function FixedFeeModal({
               <Clock className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
               <div className="text-xs text-amber-900">
                 <span className="font-bold block text-sm">
-                  നേരത്തെ ഷെഡ്യൂൾ ചെയ്ത മാറ്റം: {formatCurrency(upcomingFee.amount)} / മാസം
+                  Previously Scheduled Change: {formatCurrency(upcomingFee.amount)} / month
                 </span>
                 <span>
-                  <strong>{formatMonthYear(upcomingFee.effectiveFrom)}</strong> മുതൽ നിലവിൽ വരാൻ നിശ്ചയിച്ചിട്ടുണ്ട്.
-                  താഴെ പുതിയ തുക നൽകി ഇത് മാറ്റാവുന്നതാണ്.
+                  Effective from <strong>{formatMonthYear(upcomingFee.effectiveFrom)}</strong>.
+                  You can overwrite it by entering a new amount below.
                 </span>
               </div>
             </div>
@@ -134,7 +134,7 @@ export default function FixedFeeModal({
           <div>
             <label className="block text-sm font-bold text-gray-900 mb-1.5 flex items-center">
               <IndianRupee className="w-4 h-4 mr-1 text-emerald-700" />
-              പുതിയ നിശ്ചിത പ്രതിമാസ തുക (New Fixed Amount ₹) *
+              New Monthly Subscription Fee (₹) *
             </label>
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-bold text-gray-400">
@@ -153,7 +153,7 @@ export default function FixedFeeModal({
               />
             </div>
             <p className="text-xs text-gray-500 mt-1.5">
-              എല്ലാ അംഗങ്ങൾക്കും ഈ ഒരൊറ്റ തുകയായിരിക്കും നിശ്ചിത വരിസംഖ്യ (Fixed for all members).
+              Uniform subscription fee applied to all members.
             </p>
           </div>
 
@@ -161,18 +161,17 @@ export default function FixedFeeModal({
           <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 space-y-2">
             <div className="flex items-center space-x-2 text-blue-900 font-bold text-sm">
               <Calendar className="w-4 h-4 text-blue-700 shrink-0" />
-              <span>പ്രാബല്യത്തിൽ വരുന്ന സമയം (Comes into Action)</span>
+              <span>Effective Schedule</span>
             </div>
             <div className="flex items-center space-x-2 text-sm font-semibold text-blue-950 bg-white p-2.5 rounded-xl border border-blue-200">
               <span className="text-gray-500">{currentMonthName} {currentPeriod.year} (₹{currentFee})</span>
               <ArrowRight className="w-4 h-4 text-blue-600 shrink-0" />
               <span className="text-emerald-700 font-bold">
-                {nextMonthName} {nextPeriod.year} മുതൽ: ₹{newAmount || '...'}
+                From {nextMonthName} {nextPeriod.year}: ₹{newAmount || '...'}
               </span>
             </div>
             <p className="text-xs text-blue-800 leading-relaxed font-medium">
-              ℹ️ <strong>ശ്രദ്ധിക്കുക:</strong> ഈ മാറ്റം അടുത്ത മാസം (<strong>{nextMonthName} {nextPeriod.year}</strong>)
-              മുതൽ മാത്രമേ പ്രാബല്യത്തിൽ വരൂ. നിലവിലെ മാസത്തെയും മുൻപത്തെ മാസങ്ങളിലെയും കുടിശ്ശിക കണക്കുകൾ പഴയ നിരക്കിൽ തന്നെയായിരിക്കും.
+              ℹ️ <strong>Note:</strong> This rate takes effect starting next month (<strong>{nextMonthName} {nextPeriod.year}</strong>). Current and past months dues remain calculated based on their respective historical rates.
             </p>
           </div>
 
@@ -184,7 +183,7 @@ export default function FixedFeeModal({
               className="w-full sm:w-auto order-1 sm:order-2 px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition shadow-md flex items-center justify-center space-x-2 text-sm disabled:opacity-50 min-h-[44px]"
             >
               <CheckCircle2 className="w-4 h-4" />
-              <span>{isSubmitting ? 'സേവ് ചെയ്യുന്നു...' : 'അടുത്ത മാസം മുതൽ നടപ്പിലാക്കുക'}</span>
+              <span>{isSubmitting ? 'Saving...' : 'Apply from Next Month'}</span>
             </button>
             <button
               type="button"
@@ -192,7 +191,7 @@ export default function FixedFeeModal({
               disabled={isSubmitting}
               className="w-full sm:w-auto order-2 sm:order-1 px-5 py-2.5 rounded-xl border border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition text-sm min-h-[44px]"
             >
-              റദ്ദാക്കുക (Cancel)
+              Cancel
             </button>
           </div>
         </form>

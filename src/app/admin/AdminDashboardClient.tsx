@@ -106,10 +106,10 @@ export default function AdminDashboardClient({
             <span>Admin Control Panel</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
-            അഡ്മിൻ ഡാഷ്‌ബോർഡ്
+            Admin Dashboard
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 font-medium">
-            മാസ വരിസംഖ്യ കളക്ഷനും അംഗങ്ങളുടെ വിവരങ്ങളും
+            Monthly subscription collections & member management
           </p>
         </div>
 
@@ -120,7 +120,7 @@ export default function AdminDashboardClient({
             className="flex items-center justify-center space-x-2 px-4 py-3 sm:py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition shadow-xs text-sm sm:text-base"
           >
             <PlusCircle className="w-5 h-5 sm:w-4 sm:h-4" />
-            <span>+ വരിസംഖ്യ ചേർക്കുക</span>
+            <span>+ Record Payment</span>
           </button>
 
           <div className="grid grid-cols-2 sm:flex gap-2">
@@ -129,7 +129,7 @@ export default function AdminDashboardClient({
               className="flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-xl bg-white hover:bg-gray-50 text-emerald-900 border border-emerald-600 font-bold transition text-xs sm:text-sm"
             >
               <UserPlus className="w-4 h-4 text-emerald-700" />
-              <span>+ പുതിയ അംഗം</span>
+              <span>+ Add Member</span>
             </button>
 
             <button
@@ -137,7 +137,7 @@ export default function AdminDashboardClient({
               className="flex items-center justify-center space-x-1.5 px-3 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold transition text-xs sm:text-sm"
             >
               <Megaphone className="w-4 h-4 text-amber-700" />
-              <span>+ അറിയിപ്പ്</span>
+              <span>+ Notice</span>
             </button>
           </div>
         </div>
@@ -148,27 +148,27 @@ export default function AdminDashboardClient({
         <div className="space-y-1">
           <div className="flex items-center space-x-2 text-xs font-bold text-emerald-300 uppercase tracking-wider">
             <IndianRupee className="w-3.5 h-3.5 text-emerald-400" />
-            <span>നിശ്ചിത പ്രതിമാസ നിരക്ക് (Monthly Subscription)</span>
+            <span>Standard Monthly Subscription Fee</span>
           </div>
           <div className="flex flex-wrap items-baseline gap-2">
             <span className="text-2xl sm:text-3xl font-black text-white">
               {formatCurrency(stats.fixedMonthlyFee || 50)}
             </span>
             <span className="text-emerald-200 text-xs font-semibold">
-              / മാസം (Fixed for all members)
+              / month (Fixed for all members)
             </span>
           </div>
           {stats.upcomingFee ? (
             <div className="inline-flex items-center space-x-1.5 text-xs font-bold bg-amber-400/20 text-amber-200 border border-amber-400/30 px-2.5 py-1 rounded-lg mt-1">
               <Clock className="w-3.5 h-3.5 text-amber-300 shrink-0" />
               <span>
-                ഷെഡ്യൂൾ ചെയ്ത മാറ്റം: <strong>{formatMonthYear(stats.upcomingFee.effectiveFrom)}</strong> മുതൽ നിരക്ക്{' '}
-                <strong>{formatCurrency(stats.upcomingFee.amount)}</strong> ആകും.
+                Scheduled Revision: From <strong>{formatMonthYear(stats.upcomingFee.effectiveFrom)}</strong>, fee will be{' '}
+                <strong>{formatCurrency(stats.upcomingFee.amount)}</strong>/mo.
               </span>
             </div>
           ) : (
             <p className="text-[11px] text-emerald-200/80">
-              അഡ്മിൻ തുക മാറ്റിയാൽ അടുത്ത മാസം 1 മുതൽ പുതിയ നിരക്ക് നിലവിൽ വരും.
+              When updated, new rate automatically applies from the 1st of next month.
             </p>
           )}
         </div>
@@ -189,7 +189,7 @@ export default function AdminDashboardClient({
           <div>
             <div className="flex items-center justify-between text-emerald-800 mb-1">
               <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider truncate">
-                {currentMonthName} കളക്ഷൻ
+                {currentMonthName} Collections
               </span>
               <TrendingUp className="w-4 h-4 text-emerald-600 shrink-0" />
             </div>
@@ -198,7 +198,7 @@ export default function AdminDashboardClient({
             </div>
           </div>
           <p className="text-[10px] sm:text-xs text-gray-500 mt-2 font-medium truncate">
-            പ്രതീക്ഷിക്കുന്നത്: {formatCurrency(stats.totalExpectedThisMonth)}
+            Target: {formatCurrency(stats.totalExpectedThisMonth)}
           </p>
         </div>
 
@@ -207,7 +207,7 @@ export default function AdminDashboardClient({
           <div>
             <div className="flex items-center justify-between text-gray-600 mb-1">
               <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider truncate">
-                ഈ മാസം അടച്ചവർ
+                Paid This Month
               </span>
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             </div>
@@ -233,7 +233,7 @@ export default function AdminDashboardClient({
           <div>
             <div className="flex items-center justify-between text-rose-700 mb-1">
               <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider truncate">
-                ആകെ കുടിശ്ശിക
+                Total Pending Dues
               </span>
               <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
             </div>
@@ -242,7 +242,7 @@ export default function AdminDashboardClient({
             </div>
           </div>
           <p className="text-[10px] sm:text-xs text-rose-800 font-semibold mt-2 truncate">
-            {stats.membersPendingThisMonth} അംഗങ്ങൾക്ക് ബാക്കി
+            {stats.membersPendingThisMonth} members pending
           </p>
         </div>
 
@@ -251,7 +251,7 @@ export default function AdminDashboardClient({
           <div>
             <div className="flex items-center justify-between text-gray-600 mb-1">
               <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider truncate">
-                ആകെ ഫണ്ട് ശേഖരണം
+                Total Collections
               </span>
               <CreditCard className="w-4 h-4 text-gray-600 shrink-0" />
             </div>
@@ -260,7 +260,7 @@ export default function AdminDashboardClient({
             </div>
           </div>
           <p className="text-[10px] sm:text-xs text-gray-500 mt-2 font-medium truncate">
-            സജീവ അംഗങ്ങൾ: {stats.activeMembers}
+            Active Members: {stats.activeMembers}
           </p>
         </div>
       </div>
@@ -276,8 +276,8 @@ export default function AdminDashboardClient({
               <Users className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-gray-900 text-sm sm:text-base">അംഗങ്ങളുടെ പട്ടിക (Members)</h3>
-              <p className="text-[11px] sm:text-xs text-gray-500">അംഗങ്ങളെ ചേർക്കാനും പരിശോധിക്കാനും</p>
+              <h3 className="font-bold text-gray-900 text-sm sm:text-base">Members Directory</h3>
+              <p className="text-[11px] sm:text-xs text-gray-500">Manage members, view fees & credentials</p>
             </div>
           </div>
           <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-emerald-700 shrink-0" />
@@ -292,8 +292,8 @@ export default function AdminDashboardClient({
               <CreditCard className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-gray-900 text-sm sm:text-base">വരിസംഖ്യ ചാർട്ട് (Grid)</h3>
-              <p className="text-[11px] sm:text-xs text-gray-500">12 മാസത്തെ അടവ് നില ഒറ്റനോട്ടത്തിൽ</p>
+              <h3 className="font-bold text-gray-900 text-sm sm:text-base">Annual Payment Grid</h3>
+              <p className="text-[11px] sm:text-xs text-gray-500">12-month payment status at a glance</p>
             </div>
           </div>
           <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-700 shrink-0" />
@@ -308,8 +308,8 @@ export default function AdminDashboardClient({
               <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-gray-900 text-sm sm:text-base">കുടിശ്ശിക റിപ്പോർട്ട് (Dues)</h3>
-              <p className="text-[11px] sm:text-xs text-gray-500">ബാക്കിയുള്ളവരുടെ ലിസ്റ്റും വാട്സാപ്പും</p>
+              <h3 className="font-bold text-gray-900 text-sm sm:text-base">Pending Dues & Reports</h3>
+              <p className="text-[11px] sm:text-xs text-gray-500">Defaulters list & reminder messaging</p>
             </div>
           </div>
           <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-rose-700 shrink-0" />
@@ -320,21 +320,21 @@ export default function AdminDashboardClient({
       <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-xs border border-gray-200 space-y-4">
         <div className="flex items-center justify-between border-b border-gray-100 pb-3">
           <div>
-            <h2 className="text-base sm:text-xl font-black text-gray-900">അടുത്തിടെ സ്വീകരിച്ച വരിസംഖ്യകൾ</h2>
+            <h2 className="text-base sm:text-xl font-black text-gray-900">Recent Payments</h2>
             <p className="text-[11px] sm:text-xs text-gray-500">Recent Payment Records & Receipts</p>
           </div>
           <Link
             href="/admin/payments"
             className="text-xs sm:text-sm font-bold text-emerald-800 hover:underline flex items-center shrink-0"
           >
-            എല്ലാം കാണുക <ArrowRight className="w-3.5 h-3.5 ml-1" />
+            View All <ArrowRight className="w-3.5 h-3.5 ml-1" />
           </Link>
         </div>
 
         {/* Mobile View: Cards */}
         <div className="sm:hidden space-y-2.5">
           {stats.recentPayments.length === 0 ? (
-            <p className="text-xs text-gray-500 py-6 text-center">പേയ്മെന്റുകൾ ഒന്നും രേഖപ്പെടുത്തിയിട്ടില്ല.</p>
+            <p className="text-xs text-gray-500 py-6 text-center">No payments recorded yet.</p>
           ) : (
             stats.recentPayments.map((p) => {
               const mName = MONTH_NAMES[p.forMonth - 1] || `Month ${p.forMonth}`;
@@ -362,7 +362,7 @@ export default function AdminDashboardClient({
                       className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-bold text-[11px] transition"
                     >
                       <Printer className="w-3 h-3" />
-                      <span>രസീത്</span>
+                      <span>Receipt</span>
                     </button>
                   </div>
                 </div>
@@ -376,20 +376,20 @@ export default function AdminDashboardClient({
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-100 text-gray-700 text-xs font-bold uppercase tracking-wider">
-                <th className="py-2.5 px-3 rounded-l-lg">രസീത് നമ്പർ</th>
-                <th className="py-2.5 px-3">അംഗം (Member)</th>
-                <th className="py-2.5 px-3">തീയതി</th>
-                <th className="py-2.5 px-3">മാസം</th>
-                <th className="py-2.5 px-3">തുക</th>
-                <th className="py-2.5 px-3">രീതി</th>
-                <th className="py-2.5 px-3 rounded-r-lg text-right">രസീത്</th>
+                <th className="py-2.5 px-3 rounded-l-lg">Receipt No</th>
+                <th className="py-2.5 px-3">Member</th>
+                <th className="py-2.5 px-3">Date</th>
+                <th className="py-2.5 px-3">Month</th>
+                <th className="py-2.5 px-3">Amount</th>
+                <th className="py-2.5 px-3">Mode</th>
+                <th className="py-2.5 px-3 rounded-r-lg text-right">Receipt</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-sm">
               {stats.recentPayments.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-6 text-center text-gray-500 text-xs">
-                    പേയ്മെന്റുകൾ ഒന്നും രേഖപ്പെടുത്തിയിട്ടില്ല.
+                    No payments recorded yet.
                   </td>
                 </tr>
               ) : (
@@ -423,7 +423,7 @@ export default function AdminDashboardClient({
                           className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs border border-emerald-300 transition"
                         >
                           <Printer className="w-3.5 h-3.5" />
-                          <span>പ്രിന്റ് രസീത്</span>
+                          <span>Print Receipt</span>
                         </button>
                       </td>
                     </tr>

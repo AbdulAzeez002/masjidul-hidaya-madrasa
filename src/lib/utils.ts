@@ -107,3 +107,110 @@ export function generateReceiptNumber(seq: number, year: number): string {
   return `RCP-${year}-${seqPadded}`;
 }
 
+export interface AdvanceMonthItem {
+  month: number;
+  year: number;
+  amount: number;
+  label: string;
+}
+
+/**
+ * Returns the effective monthly fee for a member for a given year & month,
+ * taking into account custom member monthlyFee and scheduled fee revisions.
+ */
+export function getRequiredFeeForMonth(
+  memberMonthlyFee: number,
+  year: number,
+  month: number,
+  feeSchedule?: { amount: number; effectiveFrom: string }[]
+): number {
+  const mKey = `${year}-${month < 10 ? '0' + month : month}`;
+  let fee = memberMonthlyFee > 0 ? memberMonthlyFee : 50;
+  if (feeSchedule && feeSchedule.length > 0) {
+    const sorted = feeSchedule.slice().sort((a, b) => a.effectiveFrom.localeCompare(b.effectiveFrom));
+    for (const s of sorted) {
+      if (s.effectiveFrom <= mKey) {
+        fee = s.amount;
+      }
+    }
+  }
+  return fee > 0 ? fee : 50;
+}
+
+export function calculateAdvanceDistribution(
+  totalAmount: number,
+  startMonth: number,
+  startYear: number,
+  monthlyFee: number,
+  feeSchedule?: { amount: number; effectiveFrom: string }[],
+  existingPaidMap?: Record<string, number>
+): AdvanceMonthItem[] {
+  if (totalAmount <= 0) return [];
+
+  let remaining = totalAmount;
+  let curM = startMonth;
+  let curY = startYear;
+  const items: AdvanceMonthItem[] = [];
+
+  while (remaining > 0) {
+    const feeForThisMonth = getRequiredFeeForMonth(monthlyFee, curY, curM, feeSchedule);
+    const mKey = `${curY}-${curM < 10 ? '0' + curM : curM}`;
+    const alreadyPaid = existingPaidMap ? (existingPaidMap[mKey] || 0) : 0;
+    const needed = Math.max(0, feeForThisMonth - alreadyPaid);
+
+    if (needed > 0) {
+      const alloc = Math.min(remaining, needed);
+      items.push({
+        month: curM,
+        year: curY,
+        amount: alloc,
+        label: `${MONTH_NAMES[curM - 1]} ${curY}`,
+      });
+      remaining -= alloc;
+    }
+
+    curM++;
+    if (curM > 12) {
+      curM = 1;
+      curY++;
+    }
+
+    // Safety guard max 60 months (5 years)
+    if (items.length >= 60) {
+      if (remaining > 0) {
+        items[items.length - 1].amount += remaining;
+        remaining = 0;
+      }
+      break;
+    }
+  }
+
+  return items;
+}
+
+export function findFirstUnpaidMonth(
+  startFromYear: number,
+  startFromMonth: number,
+  monthlyFee: number,
+  existingPaidMap: Record<string, number>,
+  feeSchedule?: { amount: number; effectiveFrom: string }[]
+): { year: number; month: number } {
+  let curY = startFromYear;
+  let curM = startFromMonth;
+
+  for (let i = 0; i < 60; i++) {
+    const feeForThisMonth = getRequiredFeeForMonth(monthlyFee, curY, curM, feeSchedule);
+    const mKey = `${curY}-${curM < 10 ? '0' + curM : curM}`;
+    const alreadyPaid = existingPaidMap[mKey] || 0;
+    if (alreadyPaid < feeForThisMonth) {
+      return { year: curY, month: curM };
+    }
+    curM++;
+    if (curM > 12) {
+      curM = 1;
+      curY++;
+    }
+  }
+  return { year: curY, month: curM };
+}
+

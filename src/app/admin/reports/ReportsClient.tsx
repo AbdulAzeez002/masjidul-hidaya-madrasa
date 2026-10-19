@@ -61,7 +61,7 @@ export default function ReportsClient({ members, stats, currentPeriod }: Reports
   const totalPendingAmount = defaulters.reduce((sum, m) => sum + m.pendingBalance, 0);
 
   const handleSendReminder = (m: MemberSummary) => {
-    const text = `*നസ്‌റത്തുൽ ഇസ്‌ലാം മദ്റസ - കിഴക്കേത്തല ശാഖ*\n-------------------------------\nഅസ്സലാമു അലൈക്കും ${m.name},\n\nമദ്റസയിലെ താങ്കളുടെ മാസ വരിസംഖ്യയിൽ *${formatCurrency(m.pendingBalance)}* (${m.unpaidMonthsCount} മാസത്തെ കുടിശ്ശിക) അടയ്ക്കാനുണ്ട്. സ്ഥാപനത്തിന്റെ സുഗമമായ നടത്തിപ്പിനായി ഈ തുക എത്രയും വേഗം നൽകി സഹകരിക്കണമെന്ന് അഭ്യർത്ഥിക്കുന്നു.\n\nജസാക്കല്ലാഹു ഖൈർ,\n*മദ്റസ കമ്മിറ്റി, കിഴക്കേത്തല*`;
+    const text = `*NASRUTHUL ISLAM MADRASA - KIYAKETHALA BRANCH*\n-------------------------------\nAssalamu Alaikum ${m.name},\n\nThis is a gentle reminder regarding your monthly subscription dues of *${formatCurrency(m.pendingBalance)}* (${m.unpaidMonthsCount} months pending). We kindly request you to clear the balance at your earliest convenience to support our institution's operations.\n\nJazakallahu Khair,\n*Madrasa Committee, Kiyakethala*`;
     const cleanPhone = m.phone.replace(/[^0-9]/g, '');
     const phoneParam = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
     const url = `https://api.whatsapp.com/send?phone=${phoneParam}&text=${encodeURIComponent(text)}`;
@@ -79,13 +79,13 @@ export default function ReportsClient({ members, stats, currentPeriod }: Reports
         <div>
           <div className="flex items-center space-x-1.5 text-xs font-bold text-rose-800 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200 inline-flex mb-1.5">
             <AlertTriangle className="w-3.5 h-3.5 text-rose-700" />
-            <span>കുടിശ്ശിക വിവരങ്ങൾ (Pending Arrears)</span>
+            <span>Pending Arrears & Dues</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
-            വരിസംഖ്യ കുടിശ്ശിക പട്ടിക (Dues List)
+            Pending Subscription Dues
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 font-medium">
-            മാസ വരിസംഖ്യ നൽകാൻ ബാക്കിയുള്ള അംഗങ്ങളുടെ പട്ടികയും ഓർമ്മപ്പെടുത്തലും.
+            List of members with outstanding subscription balances and reminder messaging.
           </p>
         </div>
 
@@ -95,7 +95,7 @@ export default function ReportsClient({ members, stats, currentPeriod }: Reports
             className="flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-xl bg-gray-900 hover:bg-black text-white font-bold transition shadow-xs text-xs sm:text-sm"
           >
             <Printer className="w-4 h-4" />
-            <span>പ്രിന്റ് ലിസ്റ്റ് (Print)</span>
+            <span>Print List</span>
           </button>
           <button
             onClick={handleDownloadBackup}
@@ -103,7 +103,7 @@ export default function ReportsClient({ members, stats, currentPeriod }: Reports
             title="Download full database backup JSON"
           >
             <Download className="w-4 h-4" />
-            <span>ബാക്കപ്പ് (Backup)</span>
+            <span>Backup (JSON)</span>
           </button>
         </div>
       </div>
@@ -112,31 +112,31 @@ export default function ReportsClient({ members, stats, currentPeriod }: Reports
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 no-print">
         <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 sm:p-5">
           <span className="text-[11px] sm:text-xs font-bold text-rose-800 uppercase tracking-wider block">
-            ആകെ പിരിയാനുള്ള കുടിശ്ശിക
+            Total Outstanding Dues
           </span>
           <div className="text-2xl sm:text-3xl font-black text-rose-900 mt-1">
             {formatCurrency(totalPendingAmount)}
           </div>
           <p className="text-xs text-rose-700 mt-1.5 font-semibold">
-            {defaulters.length} അംഗങ്ങൾക്ക് കുടിശ്ശികയുണ്ട്
+            {defaulters.length} members with pending dues
           </p>
         </div>
 
         <div className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-5 shadow-xs">
           <span className="text-[11px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider block">
-            മുഴുവൻ തുകയും അടച്ച അംഗങ്ങൾ
+            Fully Paid Members
           </span>
           <div className="text-2xl sm:text-3xl font-black text-emerald-800 mt-1">
-            {members.length - defaulters.length} പേർ
+            {members.length - defaulters.length} Members
           </div>
           <p className="text-xs text-gray-500 mt-1.5 font-medium">
-            കൃത്യമായി നൽകിയവർ
+            All dues cleared
           </p>
         </div>
 
         <div className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-5 shadow-xs">
           <span className="text-[11px] sm:text-xs font-bold text-gray-500 uppercase tracking-wider block">
-            വരിസംഖ്യ പിരിവ് ശതമാനം
+            Collection Percentage
           </span>
           <div className="text-2xl sm:text-3xl font-black text-gray-900 mt-1">
             {members.length > 0
@@ -144,7 +144,7 @@ export default function ReportsClient({ members, stats, currentPeriod }: Reports
               : '0%'}
           </div>
           <p className="text-xs text-gray-500 mt-1.5 font-medium">
-            {currentMonthName} {currentPeriod.year} കണക്ക്
+            As of {currentMonthName} {currentPeriod.year}
           </p>
         </div>
       </div>
@@ -154,19 +154,19 @@ export default function ReportsClient({ members, stats, currentPeriod }: Reports
         {/* Printable Official Header */}
         <div className="border-b-2 border-emerald-900 pb-3 text-center">
           <h2 className="text-xl sm:text-2xl font-black text-emerald-950">
-            നസ്‌റത്തുൽ ഇസ്‌ലാം മദ്റസ - കിഴക്കേത്തല ശാഖ
+            NASRUTHUL ISLAM MADRASA - KIYAKETHALA BRANCH
           </h2>
           <p className="text-xs sm:text-sm font-bold text-gray-700">
-            NASRUTHUL ISLAM MADRASA - KIYAKETHALA BRANCH
+            PULLANCHERI, NELLIKKUTH, KERALA 676122
           </p>
           <div className="mt-1 inline-block px-2.5 py-0.5 bg-rose-100 text-rose-900 text-xs font-bold rounded-md uppercase tracking-wider">
-            മാസ വരിസംഖ്യ കുടിശ്ശിക പട്ടിക ({currentMonthName} {currentPeriod.year})
+            Monthly Subscription Dues List ({currentMonthName} {currentPeriod.year})
           </div>
         </div>
 
         {defaulters.length === 0 ? (
           <div className="py-10 text-center text-emerald-800 font-bold text-base">
-            🎉 മാഷാ അല്ലാഹ്! എല്ലാ അംഗങ്ങളും ഈ മാസം വരെയുള്ള വരിസംഖ്യ കൃത്യമായി അടച്ചിട്ടുണ്ട്. നിലവിൽ ആർക്കും കുടിശ്ശികയില്ല.
+            🎉 Alhamdulillah! All members have cleared their monthly dues up to this month. No pending arrears.
           </div>
         ) : (
           <>
@@ -199,15 +199,15 @@ export default function ReportsClient({ members, stats, currentPeriod }: Reports
                       </div>
                       {m.unpaidMonthsCount > 0 && (
                         <div className="text-[10px] text-rose-800 font-semibold">
-                          {m.unpaidMonthsCount} മാസത്തെ കുടിശ്ശിക
+                          {m.unpaidMonthsCount} months overdue
                         </div>
                       )}
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between text-xs bg-gray-50 px-2.5 py-1.5 rounded-lg border border-gray-100">
-                    <span className="text-gray-500">മാസ വരിസംഖ്യ: <strong>{formatCurrency(m.monthlyFee)}</strong></span>
-                    <span className="text-gray-500">ആകെ നൽകിയത്: <strong className="text-emerald-800">{formatCurrency(m.totalPaid)}</strong></span>
+                    <span className="text-gray-500">Monthly Fee: <strong>{formatCurrency(m.monthlyFee)}</strong></span>
+                    <span className="text-gray-500">Total Paid: <strong className="text-emerald-800">{formatCurrency(m.totalPaid)}</strong></span>
                   </div>
 
                   {/* Actions Row */}
@@ -218,7 +218,7 @@ export default function ReportsClient({ members, stats, currentPeriod }: Reports
                         className="flex-1 flex items-center justify-center space-x-1 py-2 px-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition"
                       >
                         <Share2 className="w-3.5 h-3.5" />
-                        <span>WhatsApp അയക്കുക</span>
+                        <span>Send WhatsApp</span>
                       </button>
                     )}
 
@@ -230,7 +230,7 @@ export default function ReportsClient({ members, stats, currentPeriod }: Reports
                       className="flex-1 flex items-center justify-center space-x-1 py-2 px-2.5 rounded-xl bg-gray-900 hover:bg-black text-white font-bold text-xs shadow-xs transition"
                     >
                       <CreditCard className="w-3.5 h-3.5" />
-                      <span>വരിസംഖ്യ ചേർക്കുക</span>
+                      <span>Record Payment</span>
                     </button>
                   </div>
                 </div>
@@ -242,13 +242,13 @@ export default function ReportsClient({ members, stats, currentPeriod }: Reports
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-100 text-gray-800 text-xs font-bold uppercase tracking-wider">
-                    <th className="py-2.5 px-3 rounded-l-lg">നമ്പർ</th>
-                    <th className="py-2.5 px-3">അംഗത്തിന്റെ പേര്</th>
-                    <th className="py-2.5 px-3">ഫോൺ നമ്പർ</th>
-                    <th className="py-2.5 px-3">മാസ വരിസംഖ്യ</th>
-                    <th className="py-2.5 px-3">അടച്ച തുക</th>
-                    <th className="py-2.5 px-3">ബാക്കി കുടിശ്ശിക</th>
-                    <th className="py-2.5 px-3 rounded-r-lg text-right no-print">നടപടി</th>
+                    <th className="py-2.5 px-3 rounded-l-lg">No.</th>
+                    <th className="py-2.5 px-3">Member Name</th>
+                    <th className="py-2.5 px-3">Phone Number</th>
+                    <th className="py-2.5 px-3">Monthly Fee</th>
+                    <th className="py-2.5 px-3">Total Paid</th>
+                    <th className="py-2.5 px-3">Pending Dues</th>
+                    <th className="py-2.5 px-3 rounded-r-lg text-right no-print">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 text-sm">
@@ -282,7 +282,7 @@ export default function ReportsClient({ members, stats, currentPeriod }: Reports
                         </span>
                         {m.unpaidMonthsCount > 0 && (
                           <div className="text-[11px] text-rose-800 font-semibold">
-                            ({m.unpaidMonthsCount} മാസത്തെ തുക)
+                            ({m.unpaidMonthsCount} months due)
                           </div>
                         )}
                       </td>
@@ -308,7 +308,7 @@ export default function ReportsClient({ members, stats, currentPeriod }: Reports
                             title="Record payment now"
                           >
                             <CreditCard className="w-3.5 h-3.5" />
-                            <span>അടയ്ക്കുക</span>
+                            <span>Pay</span>
                           </button>
                         </div>
                       </td>

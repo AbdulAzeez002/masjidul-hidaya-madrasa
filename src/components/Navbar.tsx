@@ -66,10 +66,10 @@ export default function Navbar({ currentUser }: NavbarProps) {
             </div>
             <div className="flex flex-col">
               <span className="text-base sm:text-lg font-black text-emerald-950 tracking-tight leading-tight">
-                നസ്‌റത്തുൽ ഇസ്‌ലാം
+                {isAdmin || pathname.startsWith('/admin') ? 'Nasruthul Islam' : 'നസ്‌റത്തുൽ ഇസ്‌ലാം'}
               </span>
               <span className="text-[11px] font-semibold text-emerald-700 tracking-wide">
-                കിഴക്കേത്തല ശാഖ
+                {isAdmin || pathname.startsWith('/admin') ? 'Kiyakethala Branch' : 'കിഴക്കേത്തല ശാഖ'}
               </span>
             </div>
           </Link>

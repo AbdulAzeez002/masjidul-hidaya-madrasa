@@ -90,15 +90,24 @@ export default function PaymentsClient({
     m.memberCode.toLowerCase().includes(searchMember.toLowerCase())
   );
 
-  const handleDeletePayment = async (id: string, receiptNo: string) => {
-    if (!window.confirm(`Are you sure you want to delete payment ${receiptNo}?`)) {
+  const handleDeletePayment = async (p: Payment) => {
+    const isAdv = Boolean(p.isAdvance && p.advanceTotalMonths);
+    const promptMsg = isAdv
+      ? `This payment is part of a ₹${p.advanceTotalAmount} advance payment (${p.advanceTotalMonths} months: ${p.advancePeriodLabel}).\n\nDeleting it will cancel the entire advance payment across all covered months. Do you want to proceed?`
+      : `Are you sure you want to delete payment ${p.receiptNumber}?`;
+
+    if (!window.confirm(promptMsg)) {
       return;
     }
 
     try {
-      const res = await fetch(`/api/payments/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/payments/${p.id}`, { method: 'DELETE' });
       if (res.ok) {
-        setPayments((prev) => prev.filter((p) => p.id !== id));
+        if (p.advanceBatchId) {
+          setPayments((prev) => prev.filter((item) => item.advanceBatchId !== p.advanceBatchId));
+        } else {
+          setPayments((prev) => prev.filter((item) => item.id !== p.id));
+        }
         await reloadPaymentsAndMembers();
       } else {
         alert('Failed to delete payment');
@@ -121,13 +130,13 @@ export default function PaymentsClient({
         <div>
           <div className="flex items-center space-x-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 inline-flex mb-1.5">
             <CreditCard className="w-3.5 h-3.5 text-emerald-700" />
-            <span>വരിസംഖ്യ കളക്ഷൻ മാനേജ്‌മെന്റ്</span>
+            <span>Subscription Collections Management</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
-            വരിസംഖ്യ റെക്കോർഡുകളും മാസ ചാർട്ടും (Payments & Grid)
+            Payments & Monthly Grid
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 font-medium">
-            ആരൊക്കെ പണം നൽകി, ആരൊക്കെ നൽകിയില്ല എന്ന് ഒറ്റനോട്ടത്തിൽ കണ്ടെത്തുക.
+            Track who paid and who has pending dues at a glance.
           </p>
         </div>
 
@@ -137,7 +146,7 @@ export default function PaymentsClient({
             className="flex items-center justify-center space-x-1.5 px-3.5 py-2.5 rounded-xl bg-white hover:bg-emerald-50 text-emerald-900 border border-emerald-600 font-bold transition text-xs sm:text-sm"
           >
             <IndianRupee className="w-3.5 h-3.5 text-emerald-700" />
-            <span>നിശ്ചിത വരിസംഖ്യ ({formatCurrency(members[0]?.currentMonthFee || 50)})</span>
+            <span>Monthly Fee ({formatCurrency(members[0]?.currentMonthFee || 50)})</span>
           </button>
 
           <button
@@ -148,7 +157,7 @@ export default function PaymentsClient({
             className="flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition shadow-xs text-sm"
           >
             <PlusCircle className="w-4 h-4" />
-            <span>+ വരിസംഖ്യ ചേർക്കുക</span>
+            <span>+ Record Payment</span>
           </button>
         </div>
       </div>
@@ -166,7 +175,7 @@ export default function PaymentsClient({
             }`}
           >
             <TableIcon className="w-4 h-4" />
-            <span>മാസ ചാർട്ട്</span>
+            <span>Payment Grid</span>
           </button>
 
           <button
@@ -178,7 +187,7 @@ export default function PaymentsClient({
             }`}
           >
             <List className="w-4 h-4" />
-            <span>രസീതുകൾ</span>
+            <span>Receipts Log</span>
           </button>
         </div>
 
@@ -207,7 +216,7 @@ export default function PaymentsClient({
               type="text"
               value={searchMember}
               onChange={(e) => setSearchMember(e.target.value)}
-              placeholder="തിരയുക..."
+              placeholder="Search member..."
               className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-gray-300 focus:border-emerald-600 focus:outline-hidden text-xs sm:text-sm"
             />
           </div>
@@ -220,10 +229,10 @@ export default function PaymentsClient({
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 pb-3">
             <div>
               <h2 className="text-xl font-black text-gray-900">
-                {selectedYear} വർഷത്തെ വരിസംഖ്യ ചാർട്ട് (Who Paid & Who Did Not)
+                {selectedYear} Annual Payment Grid (Who Paid & Who Did Not)
               </h2>
               <p className="text-xs text-gray-500">
-                പച്ച നിറം: അടച്ചു (Paid) | ചുവപ്പ്: ബാക്കി (Pending Due)
+                Green: Paid | Red: Pending Due
               </p>
             </div>
 
@@ -231,15 +240,15 @@ export default function PaymentsClient({
             <div className="flex items-center space-x-4 text-xs font-bold">
               <span className="flex items-center text-emerald-800">
                 <span className="w-3.5 h-3.5 rounded-full bg-emerald-500 inline-block mr-1"></span>
-                അടച്ചു (Paid)
+                Paid
               </span>
               <span className="flex items-center text-rose-800">
                 <span className="w-3.5 h-3.5 rounded-full bg-rose-400 inline-block mr-1"></span>
-                ബാക്കി (Due)
+                Pending Due
               </span>
               <span className="flex items-center text-gray-400">
                 <span className="w-3.5 h-3.5 rounded-full bg-gray-200 inline-block mr-1"></span>
-                ചേരുന്നതിന് മുൻപ്
+                Before Joining
               </span>
             </div>
           </div>
@@ -248,14 +257,14 @@ export default function PaymentsClient({
             <table className="w-full text-center border-collapse">
               <thead>
                 <tr className="bg-emerald-900 text-white text-xs font-bold uppercase tracking-wider">
-                  <th className="py-3 px-3 text-left rounded-l-xl min-w-[180px]">അംഗം (Member)</th>
-                  <th className="py-3 px-2 min-w-[70px]">മാസ തുക</th>
+                  <th className="py-3 px-3 text-left rounded-l-xl min-w-[180px]">Member</th>
+                  <th className="py-3 px-2 min-w-[70px]">Fee</th>
                   {MONTH_NAMES_SHORT.map((m, idx) => (
                     <th key={m} className="py-3 px-1 min-w-[55px]">
                       {m}
                     </th>
                   ))}
-                  <th className="py-3 px-3 rounded-r-xl min-w-[90px] text-right">ആകെ ബാക്കി</th>
+                  <th className="py-3 px-3 rounded-r-xl min-w-[90px] text-right">Total Due</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 text-xs">
@@ -373,14 +382,14 @@ export default function PaymentsClient({
           <div className="flex items-center justify-between border-b border-gray-100 pb-3">
             <div>
               <h2 className="text-xl font-black text-gray-900">
-                രസീതുകളുടെ പട്ടിക (Payment Receipts Log)
+                Payment Receipts Log
               </h2>
               <p className="text-xs text-gray-500">
-                മദ്റസ ഓഫീസിൽ രേഖപ്പെടുത്തിയ മുഴുവൻ പേയ്മെന്റുകളും
+                Complete records of all subscription payments
               </p>
             </div>
             <span className="text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-              {yearPayments.length} പേയ്മെന്റുകൾ ({selectedYear})
+              {yearPayments.length} Payments ({selectedYear})
             </span>
           </div>
 
@@ -388,7 +397,7 @@ export default function PaymentsClient({
           <div className="sm:hidden space-y-2.5">
             {yearPayments.length === 0 ? (
               <p className="text-xs text-gray-500 py-6 text-center">
-                {selectedYear} വർഷത്തിൽ പേയ്മെന്റുകൾ ഒന്നും രേഖപ്പെടുത്തിയിട്ടില്ല.
+                No payments recorded for {selectedYear}.
               </p>
             ) : (
               yearPayments.map((p) => {
@@ -401,8 +410,13 @@ export default function PaymentsClient({
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <div className="font-bold text-gray-900 text-sm">{p.memberName}</div>
-                        <div className="text-[11px] text-gray-500">
-                          {mName} {p.forYear} • {formatDate(p.paymentDate)}
+                        <div className="text-[11px] text-gray-500 flex items-center gap-1.5 flex-wrap">
+                          <span>{mName} {p.forYear} • {formatDate(p.paymentDate)}</span>
+                          {p.isAdvance && (
+                            <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded border border-emerald-300">
+                              Advance {p.advanceMonthIndex}/{p.advanceTotalMonths}
+                            </span>
+                          )}
                         </div>
                         <div className="text-[10px] text-emerald-800 font-mono font-bold mt-0.5">
                           {p.receiptNumber}
@@ -430,10 +444,10 @@ export default function PaymentsClient({
                         className="flex-1 inline-flex items-center justify-center space-x-1 px-3 py-1.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-bold text-xs transition"
                       >
                         <Printer className="w-3.5 h-3.5" />
-                        <span>പ്രിന്റ് രസീത്</span>
+                        <span>Print Receipt</span>
                       </button>
                       <button
-                        onClick={() => handleDeletePayment(p.id, p.receiptNumber)}
+                        onClick={() => handleDeletePayment(p)}
                         className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 border border-rose-200 transition"
                         title="Delete Payment"
                       >
@@ -451,21 +465,21 @@ export default function PaymentsClient({
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-100 text-gray-700 text-xs font-bold uppercase tracking-wider">
-                  <th className="py-2.5 px-3 rounded-l-lg">രസീത് നമ്പർ</th>
-                  <th className="py-2.5 px-3">അംഗം</th>
-                  <th className="py-2.5 px-3">തീയതി</th>
-                  <th className="py-2.5 px-3">ഏത് മാസം</th>
-                  <th className="py-2.5 px-3">തുക</th>
-                  <th className="py-2.5 px-3">രീതി</th>
-                  <th className="py-2.5 px-3">കുറിപ്പ്</th>
-                  <th className="py-2.5 px-3 rounded-r-lg text-right">നടപടികൾ</th>
+                  <th className="py-2.5 px-3 rounded-l-lg">Receipt No</th>
+                  <th className="py-2.5 px-3">Member</th>
+                  <th className="py-2.5 px-3">Date</th>
+                  <th className="py-2.5 px-3">For Month</th>
+                  <th className="py-2.5 px-3">Amount</th>
+                  <th className="py-2.5 px-3">Mode</th>
+                  <th className="py-2.5 px-3">Notes</th>
+                  <th className="py-2.5 px-3 rounded-r-lg text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-sm">
                 {yearPayments.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="py-12 text-center text-gray-500 font-medium">
-                      {selectedYear} വർഷത്തിൽ പേയ്മെന്റുകൾ ഒന്നും രേഖപ്പെടുത്തിയിട്ടില്ല.
+                      No payments recorded for {selectedYear}.
                     </td>
                   </tr>
                 ) : (
@@ -483,7 +497,12 @@ export default function PaymentsClient({
                           {formatDate(p.paymentDate)}
                         </td>
                         <td className="py-3 px-3 font-semibold text-gray-900 text-xs">
-                          {mName} {p.forYear}
+                          <div>{mName} {p.forYear}</div>
+                          {p.isAdvance && (
+                            <span className="inline-flex items-center text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded border border-emerald-300 mt-0.5">
+                              Advance {p.advanceMonthIndex}/{p.advanceTotalMonths}
+                            </span>
+                          )}
                         </td>
                         <td className="py-3 px-3 font-black text-emerald-800">
                           {formatCurrency(p.amount)}
@@ -503,10 +522,10 @@ export default function PaymentsClient({
                               className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs border border-emerald-300 transition"
                             >
                               <Printer className="w-3.5 h-3.5" />
-                              <span>പ്രിന്റ്</span>
+                              <span>Print</span>
                             </button>
                             <button
-                              onClick={() => handleDeletePayment(p.id, p.receiptNumber)}
+                              onClick={() => handleDeletePayment(p)}
                               className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition"
                               title="Delete Payment"
                             >

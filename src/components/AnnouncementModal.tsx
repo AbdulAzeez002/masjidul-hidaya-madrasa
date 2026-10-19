@@ -73,9 +73,9 @@ export default function AnnouncementModal({
             <Megaphone className="w-6 h-6 text-emerald-300" />
             <div>
               <h2 className="text-lg sm:text-xl font-bold">
-                {isEditing ? 'അറിയിപ്പ് മാറ്റം വരുത്തുക' : 'പുതിയ അറിയിപ്പ് നൽകുക'}
+                {isEditing ? 'Edit Announcement' : 'Post New Announcement'}
               </h2>
-              <p className="text-xs text-emerald-200">Post Madrasa Announcement for Members</p>
+              <p className="text-xs text-emerald-200">Publish notice for members</p>
             </div>
           </div>
           <button
@@ -96,7 +96,7 @@ export default function AnnouncementModal({
 
           <div>
             <label className="block text-sm font-bold text-gray-800 mb-1">
-              അറിയിപ്പിന്റെ തലക്കെട്ട് (Title) *
+              Announcement Title *
             </label>
             <input
               type="text"
@@ -110,7 +110,7 @@ export default function AnnouncementModal({
 
           <div>
             <label className="block text-sm font-bold text-gray-800 mb-1">
-              വിശദവിവരങ്ങൾ (Announcement Content) *
+              Announcement Content *
             </label>
             <textarea
               rows={4}
@@ -125,16 +125,16 @@ export default function AnnouncementModal({
           <div className="grid grid-cols-2 gap-3 items-center">
             <div>
               <label className="block text-sm font-bold text-gray-800 mb-1">
-                പ്രാധാന്യം (Priority)
+                Priority
               </label>
               <select
                 value={priority}
                 onChange={(e) => setPriority(e.target.value as any)}
                 className="w-full px-3 py-2.5 rounded-xl border-2 border-gray-300 focus:border-emerald-600 focus:outline-hidden text-sm font-medium"
               >
-                <option value="normal">Normal (സാധാരണ)</option>
-                <option value="important">Important (പ്രധാനം)</option>
-                <option value="urgent">Urgent (അടിയന്തിരം)</option>
+                <option value="normal">Normal</option>
+                <option value="important">Important</option>
+                <option value="urgent">Urgent</option>
               </select>
             </div>
 
@@ -148,7 +148,7 @@ export default function AnnouncementModal({
                 />
                 <span className="text-sm font-bold text-gray-800 flex items-center">
                   <Pin className="w-4 h-4 mr-1 text-emerald-600" />
-                  മുകളിൽ പിൻ ചെയ്യുക (Pin to Top)
+                  Pin to Top
                 </span>
               </label>
             </div>
@@ -161,7 +161,7 @@ export default function AnnouncementModal({
               disabled={isSubmitting}
               className="w-full sm:w-auto order-1 sm:order-2 px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition shadow-md disabled:opacity-50 text-base min-h-[44px]"
             >
-              {isSubmitting ? 'പോസ്റ്റ് ചെയ്യുന്നു...' : 'പ്രസിദ്ധീകരിക്കുക (Publish Notice)'}
+              {isSubmitting ? 'Publishing...' : isEditing ? 'Update Announcement' : 'Publish Announcement'}
             </button>
             <button
               type="button"

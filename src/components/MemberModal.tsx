@@ -99,10 +99,10 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
             <UserPlus className="w-6 h-6 text-emerald-300" />
             <div>
               <h2 className="text-xl font-bold">
-                {isEditing ? 'അംഗത്തിന്റെ വിവരങ്ങൾ പുതുക്കുക' : 'പുതിയ അംഗത്തെ ചേർക്കുക'}
+                {isEditing ? 'Edit Member Details' : 'Add New Member'}
               </h2>
               <p className="text-xs text-emerald-200">
-                {isEditing ? 'Edit Madrasa Member Details' : 'Add New Madrasa Member (Admin Created)'}
+                {isEditing ? 'Update madrasa member information' : 'Create member record & credentials'}
               </p>
             </div>
           </div>
@@ -125,7 +125,7 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
           {/* Member Name */}
           <div>
             <label className="block text-sm font-bold text-gray-800 mb-1">
-              അംഗത്തിന്റെ പേര് (Full Name) *
+              Full Name *
             </label>
             <input
               type="text"
@@ -141,7 +141,7 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
             {/* Member Code */}
             <div>
               <label className="block text-sm font-bold text-gray-800 mb-1 flex items-center justify-between">
-                <span>അംഗത്വം നമ്പർ (Member Code)</span>
+                <span>Member Code</span>
                 <span className="text-[10px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 uppercase font-bold">
                   {isEditing ? 'Permanent' : 'Auto'}
                 </span>
@@ -158,7 +158,7 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
             <div>
               <label className="block text-sm font-bold text-gray-800 mb-1 flex items-center">
                 <Phone className="w-3.5 h-3.5 mr-1 text-emerald-700" />
-                ഫോൺ നമ്പർ (Phone)
+                Phone Number
               </label>
               <input
                 type="tel"
@@ -174,7 +174,7 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
           <div>
             <label className="block text-sm font-bold text-gray-800 mb-1 flex items-center">
               <Home className="w-3.5 h-3.5 mr-1 text-emerald-700" />
-              വീട്ടുപേര് / സ്ഥലം (Address / House Name)
+              House Name / Address
             </label>
             <input
               type="text"
@@ -190,22 +190,22 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
             <div>
               <label className="block text-sm font-bold text-gray-800 mb-1 flex items-center">
                 <IndianRupee className="w-3.5 h-3.5 mr-1 text-emerald-700" />
-                നിശ്ചിത വരിസംഖ്യ (Fixed Monthly Fee)
+                Fixed Monthly Fee
               </label>
               <div className="w-full px-3.5 py-2.5 rounded-xl border-2 border-emerald-200 bg-emerald-50/60 font-black text-emerald-900 flex items-center justify-between">
-                <span>{formatCurrency(Number(monthlyFee) || 50)} / മാസം</span>
+                <span>{formatCurrency(Number(monthlyFee) || 50)} / month</span>
                 <span className="text-[11px] font-bold text-emerald-800 bg-emerald-200/80 px-2 py-0.5 rounded-md">
-                  നിശ്ചിത തുക (Fixed)
+                  Fixed Rate
                 </span>
               </div>
               <p className="text-[11px] text-gray-500 mt-1">
-                എല്ലാ അംഗങ്ങൾക്കും ഒരേ നിശ്ചിത തുകയായിരിക്കും.
+                Unified standard fee for all members.
               </p>
             </div>
 
             <div>
               <label className="block text-sm font-bold text-gray-800 mb-1">
-                തുടങ്ങിയ മാസം (Joined Month)
+                Joining Month
               </label>
               <input
                 type="month"
@@ -220,16 +220,16 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
           <div className="bg-emerald-50/70 border-2 border-emerald-300 rounded-xl p-4 space-y-3">
             <div className="flex items-center space-x-2 text-emerald-900 font-bold text-sm">
               <KeyRound className="w-4 h-4 text-emerald-700" />
-              <span>അംഗത്തിനുള്ള ലോഗിൻ വിവരങ്ങൾ (Member Login Credentials)</span>
+              <span>Member Login Credentials</span>
             </div>
             <p className="text-xs text-gray-600">
-              അംഗങ്ങൾക്ക് സ്വന്തമായി രജിസ്റ്റർ ചെയ്യാൻ കഴിയില്ല. അഡ്മിൻ നൽകുന്ന ഈ യൂസർ നെയിമും പാസ്‌വേഡും ഉപയോഗിച്ച് അവർക്ക് സ്റ്റാറ്റസ് കാണാം.
+              Members do not self-register. Share this username and password with the member to allow them to view their payment history.
             </p>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1">
-                  യൂസർ നെയിം (Username) *
+                  Username *
                 </label>
                 <input
                   type="text"
@@ -243,7 +243,7 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
 
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1">
-                  പാസ്‌വേഡ് (Password) {isEditing ? '(മാറ്റാൻ മാത്രം നൽകുക)' : '*'}
+                  Password {isEditing ? '(leave blank to keep unchanged)' : '*'}
                 </label>
                 <input
                   type="text"
@@ -261,21 +261,21 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-bold text-gray-800 mb-1">
-                സ്റ്റാറ്റസ് (Account Status)
+                Account Status
               </label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as any)}
                 className="w-full px-3 py-2.5 rounded-xl border-2 border-gray-300 focus:border-emerald-600 focus:outline-hidden text-sm"
               >
-                <option value="active">Active (സജീവം)</option>
-                <option value="inactive">Inactive (നിഷ്ക്രിയം)</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-bold text-gray-800 mb-1">
-                കുറിപ്പുകൾ (Notes)
+                Notes (Optional)
               </label>
               <input
                 type="text"
@@ -295,10 +295,10 @@ export default function MemberModal({ memberToEdit, onClose, onSuccess }: Member
               className="w-full sm:w-auto order-1 sm:order-2 px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition shadow-md disabled:opacity-50 text-base min-h-[44px]"
             >
               {isSubmitting
-                ? 'സേവ് ചെയ്യുന്നു...'
+                ? 'Saving...'
                 : isEditing
-                ? 'സേവ് ചെയ്യുക (Update Member)'
-                : 'അംഗത്തെ ചേർക്കുക (Add Member)'}
+                ? 'Update Member'
+                : 'Add Member'}
             </button>
             <button
               type="button"

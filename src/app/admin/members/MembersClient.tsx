@@ -113,13 +113,13 @@ export default function MembersClient({ initialMembers, currentPeriod }: Members
         <div>
           <div className="flex items-center space-x-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 inline-flex mb-1.5">
             <Users className="w-3.5 h-3.5 text-emerald-700" />
-            <span>മദ്റസ അംഗങ്ങളുടെ വിവരങ്ങൾ</span>
+            <span>Member Directory & Records</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
-            അംഗങ്ങളുടെ പട്ടിക (Members Directory)
+            Members Directory
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 font-medium">
-            അംഗങ്ങളെ ചേർക്കുക, വരിസംഖ്യ നില പരിശോധിക്കുക, അക്കൗണ്ട് വിവരങ്ങൾ നൽകുക.
+            Add and manage members, check payment status, and share credentials.
           </p>
         </div>
 
@@ -129,7 +129,7 @@ export default function MembersClient({ initialMembers, currentPeriod }: Members
             className="flex items-center justify-center space-x-1.5 px-3.5 py-2.5 rounded-xl bg-white hover:bg-emerald-50 text-emerald-900 border border-emerald-600 font-bold transition text-xs sm:text-sm"
           >
             <IndianRupee className="w-3.5 h-3.5 text-emerald-700" />
-            <span>നിശ്ചിത വരിസംഖ്യ ({formatCurrency(members[0]?.currentMonthFee || 50)})</span>
+            <span>Monthly Fee ({formatCurrency(members[0]?.currentMonthFee || 50)})</span>
           </button>
 
           <button
@@ -140,7 +140,7 @@ export default function MembersClient({ initialMembers, currentPeriod }: Members
             className="flex items-center justify-center space-x-1.5 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition shadow-xs text-sm"
           >
             <UserPlus className="w-4 h-4" />
-            <span>+ പുതിയ അംഗത്തെ ചേർക്കുക</span>
+            <span>+ Add Member</span>
           </button>
         </div>
       </div>
@@ -158,7 +158,7 @@ export default function MembersClient({ initialMembers, currentPeriod }: Members
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              എല്ലാം ({totalMembers})
+              All ({totalMembers})
             </button>
             <button
               onClick={() => setFilter('paid')}
@@ -169,7 +169,7 @@ export default function MembersClient({ initialMembers, currentPeriod }: Members
               }`}
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>അടച്ചവർ ({paidMembersCount})</span>
+              <span>Paid ({paidMembersCount})</span>
             </button>
             <button
               onClick={() => setFilter('pending')}
@@ -180,7 +180,7 @@ export default function MembersClient({ initialMembers, currentPeriod }: Members
               }`}
             >
               <AlertCircle className="w-3.5 h-3.5" />
-              <span>ബാക്കിയുള്ളവർ ({pendingMembersCount})</span>
+              <span>Pending ({pendingMembersCount})</span>
             </button>
           </div>
 
@@ -191,7 +191,7 @@ export default function MembersClient({ initialMembers, currentPeriod }: Members
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="പേര്, ഫോൺ, അംഗത്വം നമ്പർ..."
+              placeholder="Search name, phone, member code..."
               className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-300 focus:border-emerald-600 focus:outline-hidden text-xs sm:text-sm font-medium"
             />
           </div>
@@ -202,7 +202,7 @@ export default function MembersClient({ initialMembers, currentPeriod }: Members
       <div className="md:hidden space-y-3">
         {filteredMembers.length === 0 ? (
           <div className="bg-white rounded-2xl p-8 text-center text-gray-500 text-sm border border-gray-200">
-            അംഗങ്ങളെ കണ്ടെത്തിയില്ല.
+            No members found.
           </div>
         ) : (
           filteredMembers.map((m) => {
@@ -238,15 +238,15 @@ export default function MembersClient({ initialMembers, currentPeriod }: Members
                 {/* Financial Summary Pill */}
                 <div className="grid grid-cols-3 gap-2 bg-gray-50 p-2.5 rounded-xl border border-gray-100 text-center text-xs">
                   <div>
-                    <span className="text-[10px] text-gray-400 block font-semibold">മാസ വരിസംഖ്യ</span>
+                    <span className="text-[10px] text-gray-400 block font-semibold">Monthly Fee</span>
                     <span className="font-black text-gray-900">{formatCurrency(m.monthlyFee)}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-gray-400 block font-semibold">ആകെ അടച്ചത്</span>
+                    <span className="text-[10px] text-gray-400 block font-semibold">Total Paid</span>
                     <span className="font-black text-emerald-800">{formatCurrency(m.totalPaid)}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] text-gray-400 block font-semibold">ബാക്കി തുക</span>
+                    <span className="text-[10px] text-gray-400 block font-semibold">Balance Due</span>
                     <span
                       className={`font-black ${
                         m.pendingBalance > 0 ? 'text-rose-700' : 'text-gray-400'
@@ -286,7 +286,7 @@ export default function MembersClient({ initialMembers, currentPeriod }: Members
                     className="flex-1 flex items-center justify-center space-x-1 py-2 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs shadow-xs"
                   >
                     <CreditCard className="w-3.5 h-3.5" />
-                    <span>വരിസംഖ്യ ചേർക്കുക</span>
+                    <span>Record Payment</span>
                   </button>
 
                   <button
@@ -320,21 +320,21 @@ export default function MembersClient({ initialMembers, currentPeriod }: Members
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-100 text-gray-700 text-xs font-bold uppercase tracking-wider">
-                <th className="py-3 px-4">അംഗം / കോഡ്</th>
-                <th className="py-3 px-4">ഫോൺ നമ്പർ</th>
-                <th className="py-3 px-4">മാസ വരിസംഖ്യ</th>
-                <th className="py-3 px-4">{currentMonthName} സ്റ്റാറ്റസ്</th>
-                <th className="py-3 px-4">ആകെ അടച്ചത്</th>
-                <th className="py-3 px-4">ബാക്കി തുക</th>
-                <th className="py-3 px-4">ലോഗിൻ വിവരങ്ങൾ</th>
-                <th className="py-3 px-4 text-right">നടപടികൾ</th>
+                <th className="py-3 px-4">Member / Code</th>
+                <th className="py-3 px-4">Phone Number</th>
+                <th className="py-3 px-4">Monthly Fee</th>
+                <th className="py-3 px-4">{currentMonthName} Status</th>
+                <th className="py-3 px-4">Total Paid</th>
+                <th className="py-3 px-4">Balance Due</th>
+                <th className="py-3 px-4">Login Credentials</th>
+                <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-sm">
               {filteredMembers.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="py-12 text-center text-gray-500 font-medium">
-                    അംഗങ്ങളെ കണ്ടെത്തിയില്ല.
+                    No members found.
                   </td>
                 </tr>
               ) : (
@@ -387,7 +387,7 @@ export default function MembersClient({ initialMembers, currentPeriod }: Members
                             {formatCurrency(m.pendingBalance)}
                           </span>
                         ) : (
-                          <span className="text-emerald-700 font-semibold text-xs">ബാക്കിയില്ല (Nil)</span>
+                          <span className="text-emerald-700 font-semibold text-xs">Nil</span>
                         )}
                       </td>
 

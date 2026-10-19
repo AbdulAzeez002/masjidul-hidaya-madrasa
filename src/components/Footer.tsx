@@ -1,7 +1,13 @@
+'use client';
+
 import React from 'react';
+import { usePathname } from 'next/navigation';
 import { Building2, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
+  const pathname = usePathname();
+  const isAdminPage = pathname?.startsWith('/admin');
+
   return (
     <footer className="bg-emerald-950 text-white mt-auto border-t-4 border-emerald-700 no-print">
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -10,13 +16,17 @@ export default function Footer() {
           <div className="space-y-3">
             <div className="flex items-center space-x-2.5 text-emerald-300">
               <Building2 className="w-6 h-6" />
-              <span className="text-xl font-black tracking-wide">നസ്‌റത്തുൽ ഇസ്‌ലാം മദ്റസ</span>
+              <span className="text-xl font-black tracking-wide">
+                {isAdminPage ? 'Nasruthul Islam Madrasa' : 'നസ്‌റത്തുൽ ഇസ്‌ലാം മദ്റസ'}
+              </span>
             </div>
             <p className="text-sm text-emerald-100 font-semibold">
-              കിഴക്കേത്തല ശാഖ (Nasruthul Islam Kiyakethala Branch)
+              {isAdminPage ? 'Kiyakethala Branch' : 'കിഴക്കേത്തല ശാഖ (Nasruthul Islam Kiyakethala Branch)'}
             </p>
             <p className="text-xs text-emerald-200/80 leading-relaxed max-w-lg">
-              മദ്റസയുടെ പ്രവർത്തനങ്ങൾക്കും ദീനീ സ്ഥാപനത്തിന്റെ പുരോഗതിക്കും വേണ്ടിയുള്ള പ്രതിമാസ വരിസംഖ്യ ശേഖരണ സംവിധാനം.
+              {isAdminPage
+                ? 'Monthly subscription collection and management portal for madrasa operations and community development.'
+                : 'മദ്റസയുടെ പ്രവർത്തനങ്ങൾക്കും ദീനീ സ്ഥാപനത്തിന്റെ പുരോഗതിക്കും വേണ്ടിയുള്ള പ്രതിമാസ വരിസംഖ്യ ശേഖരണ സംവിധാനം.'}
             </p>
             <p className="text-xs text-emerald-400/80 pt-1">
               Nasruthul Islam Kiyakethala Branch © {new Date().getFullYear()}
@@ -26,7 +36,7 @@ export default function Footer() {
           {/* Contact & Location */}
           <div className="space-y-2 md:pl-8">
             <h4 className="text-sm font-bold text-emerald-300 uppercase tracking-wider">
-              ബന്ധപ്പെടുക / Contact & Location
+              {isAdminPage ? 'Contact & Location' : 'ബന്ധപ്പെടുക / Contact & Location'}
             </h4>
             <div className="space-y-2.5 text-sm text-emerald-100">
               <p className="flex items-center space-x-2">

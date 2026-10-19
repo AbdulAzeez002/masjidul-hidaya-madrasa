@@ -34,21 +34,21 @@ export default function StatusBadge({ status, isPaid, label, size = 'md' }: Stat
       text = 'text-emerald-800';
       border = 'border-emerald-300';
       icon = <CheckCircle2 className={`${iconSizes[size]} text-emerald-600 mr-1.5 flex-shrink-0`} />;
-      defaultLabel = 'PAID / അടച്ചു';
+      defaultLabel = 'PAID';
       break;
     case 'pending':
       bg = 'bg-rose-100';
       text = 'text-rose-800';
       border = 'border-rose-300';
       icon = <AlertCircle className={`${iconSizes[size]} text-rose-600 mr-1.5 flex-shrink-0`} />;
-      defaultLabel = 'PENDING / ബാക്കി';
+      defaultLabel = 'PENDING';
       break;
     case 'partial':
       bg = 'bg-amber-100';
       text = 'text-amber-900';
       border = 'border-amber-300';
       icon = <Clock className={`${iconSizes[size]} text-amber-600 mr-1.5 flex-shrink-0`} />;
-      defaultLabel = 'PARTIAL / ഭാഗികം';
+      defaultLabel = 'PARTIAL';
       break;
     case 'active':
       bg = 'bg-blue-50';

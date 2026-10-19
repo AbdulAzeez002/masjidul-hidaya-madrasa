@@ -346,8 +346,13 @@ export default function MemberDashboardClient({
 
                     <div className="flex items-baseline justify-between pt-1">
                       <div>
-                        <span className="text-xs font-bold text-gray-900 block">
-                          {mName} {p.forYear}
+                        <span className="text-xs font-bold text-gray-900 flex items-center gap-1">
+                          <span>{mName} {p.forYear}</span>
+                          {p.isAdvance && (
+                            <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded border border-emerald-300">
+                              മുൻകൂർ {p.advanceMonthIndex}/{p.advanceTotalMonths}
+                            </span>
+                          )}
                         </span>
                         <span className="text-[11px] text-gray-500 flex items-center">
                           <Calendar className="w-3 h-3 mr-1 text-gray-400" />
@@ -408,7 +413,12 @@ export default function MemberDashboardClient({
                           {formatDate(p.paymentDate)}
                         </td>
                         <td className="py-3 px-4 font-bold text-gray-900">
-                          {mName} {p.forYear}
+                          <div>{mName} {p.forYear}</div>
+                          {p.isAdvance && (
+                            <span className="inline-flex items-center text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded border border-emerald-300 mt-0.5">
+                              മുൻകൂർ {p.advanceMonthIndex}/{p.advanceTotalMonths}
+                            </span>
+                          )}
                         </td>
                         <td className="py-3 px-4 font-black text-emerald-800">
                           {formatCurrency(p.amount)}

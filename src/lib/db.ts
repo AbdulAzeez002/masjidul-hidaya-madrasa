@@ -3,13 +3,14 @@ import clientPromise from './mongodb';
 import {
   Member,
   Payment,
+  PaymentMode,
   Announcement,
   MemberSummary,
   DashboardStats,
   FeeScheduleItem,
   FeeSettings,
 } from './types';
-import { getCurrentYearMonth, getMonthsCount, getNextYearMonth } from './utils';
+import { getCurrentYearMonth, getMonthsCount, getNextYearMonth, MONTH_NAMES_SHORT } from './utils';
 
 const DB_NAME = 'nasruthul_islam';
 
@@ -408,9 +409,105 @@ export async function createPayment(
   return newPayment;
 }
 
+export async function createAdvancePayments(data: {
+  memberId: string;
+  memberName: string;
+  totalAmount: number;
+  paymentDate: string;
+  paymentMode: PaymentMode;
+  notes?: string;
+  recordedBy: string;
+  distribution: { month: number; year: number; amount: number }[];
+}): Promise<Payment[]> {
+  const year = new Date(data.paymentDate).getFullYear() || 2026;
+  const totalMonths = data.distribution.length;
+  const firstItem = data.distribution[0];
+  const lastItem = data.distribution[totalMonths - 1];
+  const startMonthName = MONTH_NAMES_SHORT[firstItem.month - 1] || `${firstItem.month}`;
+  const endMonthName = MONTH_NAMES_SHORT[lastItem.month - 1] || `${lastItem.month}`;
+  const periodLabel = `${startMonthName} ${firstItem.year} – ${endMonthName} ${lastItem.year}`;
+  const batchId = `adv_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+
+  let receiptNumber = '';
+  const mongo = await getMongoDb();
+  if (mongo) {
+    const metaDoc = await mongo.collection('meta').findOneAndUpdate(
+      { key: 'settings' },
+      { $inc: { paymentSeq: 1 } },
+      { returnDocument: 'after', upsert: true }
+    );
+    const seq = metaDoc?.paymentSeq || Math.floor(1000 + Math.random() * 9000);
+    const seqPadded = String(seq).padStart(4, '0');
+    receiptNumber = `RCP-${year}-${seqPadded}`;
+
+    const paymentsToInsert: Payment[] = data.distribution.map((d, idx) => ({
+      id: `pay_${Date.now()}_${idx}_${Math.floor(Math.random() * 1000)}`,
+      receiptNumber,
+      memberId: data.memberId,
+      memberName: data.memberName,
+      amount: d.amount,
+      paymentDate: data.paymentDate,
+      forMonth: d.month,
+      forYear: d.year,
+      paymentMode: data.paymentMode,
+      notes: data.notes
+        ? `${data.notes} [Advance ${idx + 1}/${totalMonths}]`
+        : `Advance Payment (${idx + 1}/${totalMonths})`,
+      recordedBy: data.recordedBy,
+      createdAt: new Date().toISOString(),
+      isAdvance: true,
+      advanceBatchId: batchId,
+      advanceTotalAmount: data.totalAmount,
+      advanceTotalMonths: totalMonths,
+      advanceMonthIndex: idx + 1,
+      advancePeriodLabel: periodLabel,
+    }));
+
+    await mongo.collection('payments').insertMany(paymentsToInsert as any);
+    return paymentsToInsert;
+  }
+
+  const db = ensureLocalDataFile();
+  db.paymentSeq += 1;
+  const seqPadded = String(db.paymentSeq).padStart(4, '0');
+  receiptNumber = `RCP-${year}-${seqPadded}`;
+
+  const paymentsToInsert: Payment[] = data.distribution.map((d, idx) => ({
+    id: `pay_${Date.now()}_${idx}_${Math.floor(Math.random() * 1000)}`,
+    receiptNumber,
+    memberId: data.memberId,
+    memberName: data.memberName,
+    amount: d.amount,
+    paymentDate: data.paymentDate,
+    forMonth: d.month,
+    forYear: d.year,
+    paymentMode: data.paymentMode,
+    notes: data.notes
+      ? `${data.notes} [Advance ${idx + 1}/${totalMonths}]`
+      : `Advance Payment (${idx + 1}/${totalMonths})`,
+    recordedBy: data.recordedBy,
+    createdAt: new Date().toISOString(),
+    isAdvance: true,
+    advanceBatchId: batchId,
+    advanceTotalAmount: data.totalAmount,
+    advanceTotalMonths: totalMonths,
+    advanceMonthIndex: idx + 1,
+    advancePeriodLabel: periodLabel,
+  }));
+
+  db.payments.push(...paymentsToInsert);
+  saveLocalDatabase(db);
+  return paymentsToInsert;
+}
+
 export async function deletePayment(id: string): Promise<boolean> {
   const mongo = await getMongoDb();
   if (mongo) {
+    const payment = await mongo.collection('payments').findOne({ id });
+    if (payment?.advanceBatchId) {
+      const res = await mongo.collection('payments').deleteMany({ advanceBatchId: payment.advanceBatchId });
+      return res.deletedCount > 0;
+    }
     const res = await mongo.collection('payments').deleteOne({ id });
     return res.deletedCount > 0;
   }
@@ -418,7 +515,12 @@ export async function deletePayment(id: string): Promise<boolean> {
   const db = ensureLocalDataFile();
   const index = db.payments.findIndex((p) => p.id === id);
   if (index === -1) return false;
-  db.payments.splice(index, 1);
+  const payment = db.payments[index];
+  if (payment?.advanceBatchId) {
+    db.payments = db.payments.filter((p) => p.advanceBatchId !== payment.advanceBatchId);
+  } else {
+    db.payments.splice(index, 1);
+  }
   saveLocalDatabase(db);
   return true;
 }
